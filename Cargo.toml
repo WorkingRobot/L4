@@ -1,0 +1,2 @@
+[workspace]
+members = ["app", "plugins/core", "plugins/dummy"]
