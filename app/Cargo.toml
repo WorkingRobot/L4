@@ -8,3 +8,15 @@ edition = "2021"
 [dependencies]
 libloading = "0.7.4"
 plugins_core = { path = "../plugins/core" }
+
+[dependencies.gtk]
+package = "gtk4"
+version = "0.6.4"
+features = ["v4_10", "blueprint"]
+
+[dependencies.adw]
+package = "libadwaita"
+version = "0.3.1"
+
+[build-dependencies]
+glib-build-tools = "0.17.0"

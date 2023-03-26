@@ -1,5 +1,10 @@
+#![feature(async_fn_in_trait)]
+#![allow(incomplete_features)]
+
 pub use async_trait::async_trait;
 pub use semver::Version;
+use std::future::Future;
+use std::sync::Arc;
 
 pub static CORE_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub static RUSTC_VERSION: &str = env!("RUSTC_VERSION");
@@ -8,7 +13,6 @@ pub trait Environment {
     fn version(&self) -> Version;
 }
 
-#[async_trait]
 pub trait App {
     fn id(&self) -> &str;
     fn name(&self) -> &str;
@@ -16,7 +20,7 @@ pub trait App {
     fn short_description(&self) -> &str;
     fn environments(&self) -> Vec<&str>;
 
-    async fn get_environment(&self) -> Box<dyn Environment>;
+    fn get_environment(&self) -> dyn Future<Output = dyn Environment>;
 }
 
 pub trait User {
@@ -31,7 +35,7 @@ pub trait AuthSession {
     fn is_complete(&self) -> bool;
 }
 
-pub trait Identity {
+pub trait Identity: Send + Sync {
     fn id(&self) -> &str;
     fn name(&self) -> &str;
     fn description(&self) -> &str;
@@ -43,6 +47,8 @@ pub trait Identity {
 
 #[async_trait]
 pub trait Plugin: Identity {
+    fn client(&self) -> &dyn Client;
+
     async fn get_apps(&self) -> Vec<Box<dyn App>>;
     async fn get_user(&self) -> Option<Box<dyn User>>;
     async fn open_auth_session(&self) -> Option<Box<dyn AuthSession>>;
@@ -54,7 +60,7 @@ pub trait Client: Identity {}
 pub struct PluginDeclaration {
     pub rustc_version: &'static str,
     pub core_version: &'static str,
-    pub register: unsafe fn(&dyn Client) -> Box<dyn Plugin>,
+    pub register: unsafe fn(client: Arc<dyn Client>) -> Box<dyn Plugin>,
 }
 
 #[macro_export]

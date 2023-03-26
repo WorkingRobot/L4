@@ -1,2 +1,2 @@
 [workspace]
-members = ["app", "plugins/core", "plugins/dummy"]
+members = ["app", "plugins/core", "plugins/epic"]

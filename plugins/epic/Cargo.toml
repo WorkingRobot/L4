@@ -1,5 +1,5 @@
 [package]
-name = "plugins_dummy"
+name = "plugins_epic"
 version = "0.1.0"
 edition = "2021"
 
@@ -10,3 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 plugins_core = { path = "../core" }
+reqwest = { version = "0.11.14", features = ["json"] }
+serde = { version = "1.0.154", features = ["derive"] }
+serde-enum-str = "0.3.2"
+const_format = "0.2.30"
