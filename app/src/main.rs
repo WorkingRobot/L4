@@ -6,7 +6,7 @@ static APP_ID: &str = "org.gtk_rs.Todo5";
 
 // ANCHOR: main
 fn main() -> glib::ExitCode {
-    gio::resources_register_include!("todo_5.gresource").expect("Failed to register resources.");
+    gio::resources_register_include!("L4.gresource").expect("Failed to register resources.");
 
     // Create a new application
     //        👇 changed

@@ -1,3 +1,0 @@
-[submodule "deps/blueprint-compiler"]
-	path = deps/blueprint-compiler
-	url = https://gitlab.gnome.org/jwestman/blueprint-compiler.git

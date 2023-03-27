@@ -1,52 +1,23 @@
 use std::process::Command;
-use std::{
-    env,
-    path::{Path, PathBuf},
-};
+use std::{env, path::Path};
+use walkdir::WalkDir;
 
 fn main() {
     compile_resources_with_blueprints(
-        &["dummy.blp"],
         "resources",
         "resources/resources.gresource.xml",
         "L4.gresource",
     );
 }
 
-fn get_workspace_root() -> PathBuf {
-    let output = Command::new("cargo")
-        .arg("locate-project")
-        .arg("--workspace")
-        .arg("--message-format")
-        .arg("plain")
-        .output()
-        .unwrap();
-    let mut path: PathBuf = PathBuf::from(String::from_utf8(output.stdout).unwrap());
-    path.pop();
-    path
-}
+fn blueprint_batch_compile<P: AsRef<Path>>(sources: &[P], input_dir: &str, output_dir: &str) {
+    let mut command = Command::new("blueprint-compiler");
 
-fn get_blueprint_compiler_path() -> PathBuf {
-    let mut path = get_workspace_root();
-    path.push("deps");
-    path.push("blueprint-compiler");
-    path.push("blueprint-compiler.py");
-    path
-}
-
-fn blueprint_batch_compile<P: AsRef<Path>>(sources: &[&str], input_dir: P, output_dir: &str) {
-    let mut command = Command::new("python");
-
-    command
-        .arg(get_blueprint_compiler_path())
-        .arg("batch-compile")
-        .arg(output_dir)
-        .arg(input_dir.as_ref());
+    command.arg("batch-compile").arg(output_dir).arg(input_dir);
 
     for source in sources {
-        let source_path = input_dir.as_ref().join(source);
-        command.arg(&source_path);
-        println!("cargo:rerun-if-changed={source_path:?}");
+        command.arg(source.as_ref());
+        println!("cargo:rerun-if-changed={:?}", source.as_ref());
     }
 
     let output = command.output().unwrap();
@@ -59,8 +30,8 @@ fn blueprint_batch_compile<P: AsRef<Path>>(sources: &[&str], input_dir: P, outpu
     )
 }
 
-fn compile_resources_with_blueprints(
-    blueprints: &[&str],
+fn compile_resources_with_blueprints_explicit<P: AsRef<Path>>(
+    blueprints: &[P],
     source_dir: &str,
     gresource: &str,
     target: &str,
@@ -71,6 +42,27 @@ fn compile_resources_with_blueprints(
 
     glib_build_tools::compile_resources(
         &[source_dir, blueprint_out_dir.as_str()],
+        gresource,
+        target,
+    );
+}
+
+fn compile_resources_with_blueprints(source_dir: &str, gresource: &str, target: &str) {
+    let mut blueprints = Vec::new();
+    for entry in WalkDir::new(source_dir).into_iter().filter_map(|e| e.ok()) {
+        if entry.file_type().is_file()
+            && entry
+                .file_name()
+                .to_str()
+                .map(|s| s.ends_with(".blp"))
+                .unwrap_or(false)
+        {
+            blueprints.push(entry.into_path());
+        }
+    }
+    compile_resources_with_blueprints_explicit(
+        blueprints.as_slice(),
+        source_dir,
         gresource,
         target,
     );
