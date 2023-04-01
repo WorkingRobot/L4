@@ -1,5 +1,6 @@
-use std::process::Command;
-use std::{env, path::Path};
+use embed_manifest::{embed_manifest, manifest::DpiAwareness, new_manifest};
+use std::process::{Command, Stdio};
+use std::{env, path::Path, path::PathBuf};
 use walkdir::WalkDir;
 
 fn main() {
@@ -8,6 +9,41 @@ fn main() {
         "resources/resources.gresource.xml",
         "L4.gresource",
     );
+
+    let out_dir = env::var("OUT_DIR").unwrap();
+    for theme in &[
+        "Sweet",
+        "Sweet-Ambar",
+        "Sweet-Ambar-Blue",
+        "Sweet-Dark",
+        "Sweet-Mars",
+    ] {
+        let mut from_path = PathBuf::new();
+        from_path.push("resources");
+        from_path.push("Sweet");
+        from_path.push(theme);
+        from_path.set_extension("gresource");
+        let mut to_path = PathBuf::new();
+        to_path.push(out_dir.as_str());
+        to_path.push(theme);
+        to_path.set_extension("gresource");
+        std::fs::copy(&from_path, &to_path).unwrap();
+
+        println!("cargo:rerun-if-changed={}", &from_path.display());
+    }
+
+    if cfg!(target_os = "windows") {
+        embed_manifest(
+            new_manifest("WorkingRobot.L4").dpi_awareness(DpiAwareness::PerMonitorV2Only),
+        )
+        .expect("Unable to embed manifest file");
+
+        let mut res = winres::WindowsResource::new();
+        res.set_icon("resources/icon.ico")
+            .set("InternalName", "L4.EXE");
+        res.compile().unwrap();
+    }
+    println!("cargo:rerun-if-changed=build.rs");
 }
 
 fn blueprint_batch_compile<P: AsRef<Path>>(sources: &[P], input_dir: &str, output_dir: &str) {
@@ -17,16 +53,19 @@ fn blueprint_batch_compile<P: AsRef<Path>>(sources: &[P], input_dir: &str, outpu
 
     for source in sources {
         command.arg(source.as_ref());
-        println!("cargo:rerun-if-changed={:?}", source.as_ref());
+        println!("cargo:rerun-if-changed={}", source.as_ref().display());
     }
 
-    let output = command.output().unwrap();
+    let output = command
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .output()
+        .unwrap();
 
     assert!(
         output.status.success(),
-        "blueprint-compiler failed with exit status {} and stderr:\n{}",
-        output.status,
-        String::from_utf8_lossy(&output.stderr)
+        "blueprint-compiler failed with exit status {}",
+        output.status
     )
 }
 

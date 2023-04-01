@@ -1,0 +1,3 @@
+[submodule "app/resources/Sweet"]
+	path = app/resources/Sweet
+	url = https://github.com/WorkingRobot/Sweet.git

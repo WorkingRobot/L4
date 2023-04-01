@@ -1,35 +1,35 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
+mod modules;
+mod utils;
+mod widgets;
+
 use gtk::prelude::*;
 use gtk::{gio, glib};
-use window::Window;
+use widgets::Application;
 
-static APP_ID: &str = "org.gtk_rs.Todo5";
+static APP_ID: &str = "me.workingrobot.l4";
 
-// ANCHOR: main
 fn main() -> glib::ExitCode {
-    gio::resources_register_include!("L4.gresource").expect("Failed to register resources.");
+    //#[cfg(debug_assertions)]
+    // Cairo is enabled for faster launch times
+    //std::env::set_var("GSK_RENDERER", "cairo");
 
-    // Create a new application
-    //        👇 changed
-    let app = adw::Application::builder().application_id(APP_ID).build();
+    std::env::set_var("GTK_DEBUG", "interactive");
 
-    // Connect to signals
-    app.connect_startup(setup_shortcuts);
-    app.connect_activate(build_ui);
+    gio::resources_register_include!("Sweet.gresource").expect("Failed to register theme");
+    gio::resources_register_include!("Sweet-Ambar.gresource").expect("Failed to register theme");
+    gio::resources_register_include!("Sweet-Ambar-Blue.gresource")
+        .expect("Failed to register theme");
+    gio::resources_register_include!("Sweet-Dark.gresource").expect("Failed to register theme");
+    gio::resources_register_include!("Sweet-Mars.gresource").expect("Failed to register theme");
+    gio::resources_register_include!("L4.gresource").expect("Failed to register app resources");
 
-    // Run the application
-    app.run()
-}
+    gtk::init().expect("Failed to initialize GTK");
+    adw::init().expect("Failed to initialize LibAdwaita");
 
-//                       👇 changed
-fn setup_shortcuts(app: &adw::Application) {
-    app.set_accels_for_action("win.filter('All')", &["<Ctrl>a"]);
-    app.set_accels_for_action("win.filter('Open')", &["<Ctrl>o"]);
-    app.set_accels_for_action("win.filter('Done')", &["<Ctrl>d"]);
-}
+    glib::set_application_name("L4");
+    glib::set_program_name(Some("L4"));
 
-//                👇 changed
-fn build_ui(app: &adw::Application) {
-    // Create a new custom window and show it
-    let window = Window::new(app);
-    window.show();
+    Application::new().with_application_id(APP_ID).run()
 }
