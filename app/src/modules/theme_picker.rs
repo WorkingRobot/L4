@@ -27,9 +27,9 @@ impl ThemePicker {
 
 impl Module for ThemePicker {
     fn new(ctx: &impl ModuleCtx) -> Rc<RefCell<Self>> {
-        gtk::Settings::default()
+        /*gtk::Settings::default()
             .unwrap()
-            .set_gtk_theme_name(Some("Sweet-Dark"));
+            .set_gtk_theme_name(Some("Sweet-Dark"));*/
 
         let this = Self {
             provider: gtk::CssProvider::new(),

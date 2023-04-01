@@ -1,44 +1,11 @@
 using Gtk 4.0;
-using Adw 1;
 
-menu main-menu {
-  submenu {
-    label: _("_Filter");
-
-    item {
-      label: _("_All");
-      action: "win.filter";
-      target: "All";
-    }
-
-    item {
-      label: _("_Open");
-      action: "win.filter";
-      target: "Open";
-    }
-
-    item {
-      label: _("_Done");
-      action: "win.filter";
-      target: "Done";
-    }
-  }
-
-  item {
-    label: _("_Remove Done Tasks");
-    action: "win.remove-done-tasks";
-  }
-
-  item {
-    label: _("_Keyboard Shortcuts");
-    action: "win.show-help-overlay";
-  }
-}
 
 ApplicationWindow window {
-  default-width: 650;
-  default-height: 550;
   icon-name: "icon";
+
+  default-width: 600;
+  default-height: 500;
 
   titlebar: HeaderBar {
     decoration-layout: "icon:minimize,maximize,close";
@@ -51,6 +18,7 @@ ApplicationWindow window {
       label: _("L4");
     }
   };
+  
 
   Box {
     orientation: vertical;
@@ -59,7 +27,7 @@ ApplicationWindow window {
         name: "games";
         title: _("Games");
         
-        child: Adw.StatusPage leaflet2 {
+        child: Box leaflet2 {
           
         };
       }
@@ -67,14 +35,12 @@ ApplicationWindow window {
       StackPage {
         name: "main";
         title: _("maintitle");
-        child: Adw.StatusPage {
-          Box {
-            [start]
-            DropDown theme_dropdown {
-              model: StringList {
-                strings ["Sweet", "Dark", "Mars", "Ambar", "Blue"]
-              };
-            }
+        child: Box {
+          [start]
+          DropDown theme_dropdown {
+            model: StringList {
+              strings ["Sweet", "Dark", "Mars", "Ambar", "Blue"]
+            };
           }
         };
       }

@@ -3,6 +3,6 @@
   <gresource prefix="/me/workingrobot/l4/">
     <file compressed="true" preprocess="xml-stripblanks">main.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">icon.svg</file>
-    <file compressed="true">main.css</file>
+    <file compressed="true" alias="style.css">main.css</file>
   </gresource>
 </gresources>

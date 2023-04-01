@@ -11,11 +11,13 @@ use widgets::Application;
 static APP_ID: &str = "me.workingrobot.l4";
 
 fn main() -> glib::ExitCode {
-    //#[cfg(debug_assertions)]
-    // Cairo is enabled for faster launch times
-    //std::env::set_var("GSK_RENDERER", "cairo");
+    if false {
+        #[cfg(debug_assertions)]
+        // Cairo is enabled for faster launch times
+        std::env::set_var("GSK_RENDERER", "cairo");
 
-    std::env::set_var("GTK_DEBUG", "interactive");
+        std::env::set_var("GTK_DEBUG", "interactive");
+    }
 
     gio::resources_register_include!("Sweet.gresource").expect("Failed to register theme");
     gio::resources_register_include!("Sweet-Ambar.gresource").expect("Failed to register theme");
