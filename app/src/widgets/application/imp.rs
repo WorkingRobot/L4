@@ -32,21 +32,29 @@ impl ApplicationImpl for Application {
         if is_startup {
             *self.modules.borrow_mut() = Some(ModuleList::new());
         }
-        let binding = self.modules.borrow();
-        let modules = binding.as_ref().unwrap();
 
-        let window = modules.get_object::<gtk::ApplicationWindow>("window");
-        window.set_application(Some(self.obj().upcast_ref::<gtk::Application>()));
-        window.minimize();
-        window.present();
+        let dpi: i32;
+        {
+            let binding = self.modules.borrow();
+            let modules = binding.as_ref().unwrap();
+
+            let window = modules.get_object::<gtk::ApplicationWindow>("window");
+            window.set_application(Some(self.obj().upcast_ref::<gtk::Application>()));
+            window.minimize();
+            window.present();
+
+            dpi = window.get_dpi().unwrap_or(96) as i32;
+        }
 
         if is_startup {
             let manager = adw::StyleManager::default();
             manager.set_color_scheme(adw::ColorScheme::PreferDark);
 
             let settings = gtk::Settings::default().expect("Could not get default settings");
-            settings.set_gtk_xft_dpi(window.get_dpi().unwrap_or(96) as i32 * 1024);
+            settings.set_gtk_xft_dpi(dpi * 1024);
             settings.set_gtk_theme_name(Some("Sweet-Ambar-Blue"));
+
+            self.modules.borrow_mut().as_mut().unwrap().initialize();
         }
     }
 
