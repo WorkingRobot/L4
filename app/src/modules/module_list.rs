@@ -49,6 +49,6 @@ impl ModuleList {
     }
 
     pub fn initialize(&mut self) {
-        self.add::<super::Inspector>();
+        self.add::<super::TitleButtons>();
     }
 }

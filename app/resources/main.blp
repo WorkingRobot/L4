@@ -16,7 +16,7 @@ ApplicationWindow window {
     }
 
     [end]
-    Button button-info {
+    Button button-about {
       icon-name: "fa-circle-info-solid-symbolic";
     }
 
@@ -33,18 +33,30 @@ ApplicationWindow window {
       transition-type: slide_left_right;
 
       StackPage page-games {
-        title: _("Games");
-        
-        child: Box leaflet2 {
-          
+        name: "games";
+
+        child: Box games-container {
+          [start]
+          Box games-sidebar {
+            [start]
+            ListView games-plugin-view {
+
+            }
+
+            [start]
+            ListView games-game-view {
+
+            }
+          }
         };
       }
 
-      StackPage {
-        title: _("Settings");
-        child: Box page-settings {
+      StackPage page-settings {
+        name: "settings";
+
+        child: Box settings-container {
           [start]
-          DropDown theme-dropdown {
+          DropDown settings-dropdown {
             model: StringList {
               strings ["Sweet", "Dark", "Mars", "Ambar", "Blue"]
             };
@@ -52,11 +64,12 @@ ApplicationWindow window {
         };
       }
 
-      StackPage {
-        title: _("About");
-        child: Box page-about {
+      StackPage page-about {
+        name: "about";
+
+        child: Box about-container {
           [start]
-          DropDown dropdown {
+          DropDown about-dropdown {
             model: StringList {
               strings ["Sweet", "Dark", "Mars", "Ambar", "Blue"]
             };
