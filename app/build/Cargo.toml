@@ -1,0 +1,11 @@
+[package]
+name = "build-scripts"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+walkdir = "2.3.3"
+glib-build-tools = "0.17.0"
+reqwest = { version = "0.11.14", features = ["blocking"] }
+flate2 = "1.0.25"
+tar = "0.4.38"

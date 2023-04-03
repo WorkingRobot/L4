@@ -40,7 +40,18 @@ impl ModuleList {
     pub fn new() -> Self {
         let display = gdk::Display::default().expect("Could not get a display");
         let icon_theme = IconTheme::for_display(&display);
-        icon_theme.add_resource_path("/me/workingrobot/l4");
+        icon_theme.add_resource_path("/me/workingrobot/l4/icons");
+        icon_theme.add_resource_path("/com/fontawesome/icons");
+
+        println!("-- searches");
+        for search_path in icon_theme.search_path() {
+            println!("{}", search_path.display());
+        }
+        println!("-- resources");
+        for search_path in icon_theme.resource_path() {
+            println!("{search_path}");
+        }
+        println!("-- end");
 
         Self {
             builder: Builder::from_resource("/me/workingrobot/l4/main.ui"),

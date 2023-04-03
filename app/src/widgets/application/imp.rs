@@ -7,7 +7,6 @@ use gtk::{gdk, glib, prelude::Cast, traits::GtkWindowExt};
 use std::cell::RefCell;
 use std::rc::Rc;
 
-#[derive(Default)]
 pub struct Application {
     modules: Rc<RefCell<ModuleList>>,
 }
@@ -17,6 +16,12 @@ impl ObjectSubclass for Application {
     const NAME: &'static str = "L4Application";
     type Type = super::Application;
     type ParentType = adw::Application;
+
+    fn new() -> Self {
+        Self {
+            modules: Rc::new(RefCell::new(ModuleList::new())),
+        }
+    }
 }
 
 impl ObjectImpl for Application {}

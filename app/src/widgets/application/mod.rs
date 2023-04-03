@@ -10,19 +10,9 @@ glib::wrapper! {
 }
 
 impl Application {
-    pub fn new() -> Self {
-        Object::builder().build()
-    }
-
-    pub fn with_application_id(&self, application_id: &str) -> Self {
+    pub fn from_application_id(application_id: &str) -> Self {
         Object::builder()
             .property("application-id", application_id)
             .build()
-    }
-}
-
-impl Default for Application {
-    fn default() -> Self {
-        Self::new()
     }
 }

@@ -17,14 +17,25 @@ ApplicationWindow window {
     Label {
       label: _("L4");
     }
+
+    [end]
+    Button {
+      icon-name: "fa-gear-solid-symbolic";
+    }
+
+    [end]
+    Button {
+      icon-name: "fa-circle-info-solid-symbolic";
+    }
   };
   
 
   Box {
     orientation: vertical;
     Stack main-stack {
+      transition-type: slide_left_right;
+
       StackPage page-games {
-        name: "games";
         title: _("Games");
         
         child: Box leaflet2 {
@@ -33,11 +44,22 @@ ApplicationWindow window {
       }
 
       StackPage {
-        name: "main";
-        title: _("maintitle");
-        child: Box {
+        title: _("Settings");
+        child: Box page-settings {
           [start]
-          DropDown theme_dropdown {
+          DropDown theme-dropdown {
+            model: StringList {
+              strings ["Sweet", "Dark", "Mars", "Ambar", "Blue"]
+            };
+          }
+        };
+      }
+
+      StackPage {
+        title: _("About");
+        child: Box page-about {
+          [start]
+          DropDown dropdown {
             model: StringList {
               strings ["Sweet", "Dark", "Mars", "Ambar", "Blue"]
             };
