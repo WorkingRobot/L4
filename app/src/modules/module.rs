@@ -9,7 +9,7 @@ pub trait ModuleCtx {
 
     fn get_object<T: IsA<glib::Object>>(&self, name: &'static str) -> T {
         self.try_get_object(name)
-            .expect(format!("Failed to get object {}", name).as_str())
+            .unwrap_or_else(|| panic!("Failed to get object {}", name))
     }
 }
 

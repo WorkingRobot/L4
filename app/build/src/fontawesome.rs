@@ -14,7 +14,7 @@ fn fetch_icons<P: AsRef<Path>>(target_dir: P) -> Result<Vec<String>, Box<dyn std
         "https://registry.npmjs.org/@fortawesome/fontawesome-free/-/fontawesome-free-{}.tgz",
         FONTAWESOME_VERSION
     );
-    let resp = reqwest::blocking::get(&fontawesome_url)?;
+    let resp = reqwest::blocking::get(fontawesome_url)?;
     let mut archive = tar::Archive::new(GzDecoder::new(resp));
 
     let n = archive
@@ -35,7 +35,7 @@ fn fetch_icons<P: AsRef<Path>>(target_dir: P) -> Result<Vec<String>, Box<dyn std
             entry.unpack(&path).ok()?;
             Some(icon_filename)
         })
-        .filter_map(|e| e)
+        .flatten()
         .collect();
 
     Ok(n)
