@@ -16,7 +16,7 @@ fn main() -> glib::ExitCode {
         // Cairo is enabled for faster launch times
         std::env::set_var("GSK_RENDERER", "cairo");
 
-        std::env::set_var("GTK_DEBUG", "interactive");
+        // dstd::env::set_var("GTK_DEBUG", "interactive");
     }
 
     gio::resources_register_include!("Sweet.gresource").expect("Failed to register theme");
