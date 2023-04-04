@@ -1,5 +1,5 @@
 use crate::modules::{ModuleCtx, ModuleList};
-use crate::utils::dpi::UsesDpi;
+use crate::utils::UsesDpi;
 
 use adw::subclass::prelude::*;
 use gtk::{glib, prelude::Cast, traits::GtkWindowExt};
