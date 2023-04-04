@@ -21,7 +21,7 @@ fn fetch_icons<P: AsRef<Path>>(target_dir: P) -> Result<Vec<String>, Box<dyn std
         .entries()
         .unwrap()
         .filter_map(|e| e.ok())
-        .map(|mut entry| -> Option<String> {
+        .filter_map(|mut entry| -> Option<String> {
             let path = entry
                 .path()
                 .ok()?
@@ -35,7 +35,6 @@ fn fetch_icons<P: AsRef<Path>>(target_dir: P) -> Result<Vec<String>, Box<dyn std
             entry.unpack(&path).ok()?;
             Some(icon_filename)
         })
-        .flatten()
         .collect();
 
     Ok(n)

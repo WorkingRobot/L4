@@ -10,6 +10,12 @@ ApplicationWindow window {
   titlebar: HeaderBar {
     decoration-layout: "icon:minimize,maximize,close";
 
+    [start]
+    Button button-back {
+      icon-name: "fa-chevron-left-solid-symbolic";
+      visible: false;
+    }
+
     [end]
     Button button-settings {
       icon-name: "fa-gear-solid-symbolic";
