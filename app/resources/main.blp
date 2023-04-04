@@ -1,5 +1,5 @@
 using Gtk 4.0;
-
+using Gio 2.0;
 
 ApplicationWindow window {
   icon-name: "icon";
@@ -46,12 +46,31 @@ ApplicationWindow window {
           Box games-sidebar {
             [start]
             ListView games-plugin-view {
-
+              factory: BuilderListItemFactory {
+                resource: "/me/workingrobot/l4/templates/plugin.ui";
+              };
+              model: SingleSelection {
+                model: Gio.ListStore {
+                  item-type: typeof(.PluginDataModel);
+                };
+              };
             }
 
             [start]
             ListView games-game-view {
+              factory: BuilderListItemFactory {
+                resource: "/me/workingrobot/l4/templates/game.ui";
+              };
+              model: SingleSelection {
+                model: Gio.ListStore {
+                  item-type: typeof(.GameDataModel);
+                };
+              };
+            }
 
+            [start]
+            Label {
+              label: _("hello");
             }
           }
         };

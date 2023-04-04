@@ -10,6 +10,8 @@ pub trait ModuleCtx {
         self.try_get_object(name)
             .unwrap_or_else(|| panic!("Failed to get object {}", name))
     }
+
+    fn get_application(&self) -> gtk::Application;
 }
 
 pub trait Module {

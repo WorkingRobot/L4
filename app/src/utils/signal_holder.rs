@@ -1,3 +1,4 @@
+use gdk4_win32::glib::clone::Downgrade;
 use gtk::glib::{SignalHandlerId, WeakRef};
 
 pub struct SignalHolder {
@@ -7,10 +8,8 @@ pub struct SignalHolder {
 
 impl SignalHolder {
     pub fn new(object: &gtk::Widget, signal_handle: SignalHandlerId) -> Self {
-        let weak = WeakRef::<gtk::Widget>::new();
-        weak.set(Some(object));
         Self {
-            object: weak,
+            object: object.downgrade(),
             signal_handle: Some(signal_handle),
         }
     }
@@ -26,7 +25,7 @@ impl Drop for SignalHolder {
 
 macro_rules! signal {
     ($object:ident, $name:ident, $($closure:tt)+) => {
-        SignalHolder::new($object.upcast_ref::<gtk::Widget>(), $object.$name($($closure)+))
+        crate::utils::SignalHolder::new($object.upcast_ref::<gtk::Widget>(), $object.$name($($closure)+))
     };
 }
 

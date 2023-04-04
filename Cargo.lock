@@ -852,6 +852,7 @@ dependencies = [
  "gtk4",
  "libadwaita",
  "libloading",
+ "once_cell",
  "plugins_core",
  "windows",
  "winres",
