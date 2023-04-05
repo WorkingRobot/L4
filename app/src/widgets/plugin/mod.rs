@@ -1,21 +1,19 @@
 mod imp;
 
-use glib::Object;
+use std::sync::Arc;
+
 use gtk::glib;
-use gtk::prelude::*;
+use gtk::subclass::prelude::{ObjectSubclassExt, ObjectSubclassType};
+use plugins_core::Plugin;
 
 glib::wrapper! {
     pub struct PluginModel(ObjectSubclass<imp::PluginModel>);
 }
 
 impl PluginModel {
-    pub fn new(number: i32) -> Self {
-        Object::builder().property("number", number).build()
-    }
-
-    pub fn increase_number(self) {
-        let old_number = self.property::<i32>("number");
-
-        self.set_property("number", old_number + 1);
+    pub fn new(plugin: Arc<dyn Plugin>) -> Self {
+        let this = glib::Object::builder().build();
+        imp::PluginModel::from_obj(&this).set_plugin(plugin);
+        this
     }
 }

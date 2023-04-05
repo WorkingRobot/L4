@@ -1,11 +1,23 @@
 using Gtk 4.0;
+using GLib 2.0;
 
-template ListItem {
+template GtkListItem {
   activatable: true;
   selectable: true;
-  Box {
+  child: Box {
+    orientation: vertical;
+    
     Label {
-      label: _("hellooo");
+      label: bind (GtkListItem.item) as ($L4PluginModel).name;
     }
-  }
+    Label {
+      label: bind (GtkListItem.item) as ($L4PluginModel).id;
+    }
+    Label {
+      label: bind (GtkListItem.item) as ($L4PluginModel).version;
+    }
+    Label {
+      label: bind (GtkListItem.item) as ($L4PluginModel).description;
+    }
+  };
 }

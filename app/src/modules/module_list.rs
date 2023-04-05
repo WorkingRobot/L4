@@ -1,4 +1,5 @@
 use super::{Module, ModuleCtx};
+use gdk4_win32::glib::subclass::register_type;
 use gtk::prelude::*;
 use gtk::{gdk, glib, Builder, IconTheme};
 use std::cell::RefCell;
@@ -37,6 +38,9 @@ impl ModuleList {
         }
         println!("-- end");
 
+        // Register types
+        crate::widgets::PluginModel::static_type();
+
         let mut this = Self {
             application: application.as_ref().downgrade(),
             builder: Builder::from_resource("/me/workingrobot/l4/main.ui"),
@@ -54,5 +58,6 @@ impl ModuleList {
     fn initialize(&mut self) {
         self.add::<super::Init>();
         self.add::<super::TitleButtons>();
+        self.add::<super::Plugins>();
     }
 }

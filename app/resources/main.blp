@@ -50,8 +50,8 @@ ApplicationWindow window {
                 resource: "/me/workingrobot/l4/templates/plugin.ui";
               };
               model: SingleSelection {
-                model: Gio.ListStore {
-                  item-type: typeof(.PluginDataModel);
+                model: Gio.ListStore games-plugin-store {
+                  item-type: typeof($L4PluginModel);
                 };
               };
             }
@@ -62,8 +62,8 @@ ApplicationWindow window {
                 resource: "/me/workingrobot/l4/templates/game.ui";
               };
               model: SingleSelection {
-                model: Gio.ListStore {
-                  item-type: typeof(.GameDataModel);
+                model: Gio.ListStore games-game-store {
+                  item-type: typeof($L4AppModel);
                 };
               };
             }
