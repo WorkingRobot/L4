@@ -21,8 +21,7 @@ impl Plugins {
 }
 
 impl Module for Plugins {
-    const INFO: ModuleInfo = ModuleInfo {
-        name: "Plugin Registrar",
+    const META: ModuleMeta = ModuleMeta {
         phase: LoadPhase::UILoad,
         priority: 2,
     };

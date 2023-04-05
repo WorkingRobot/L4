@@ -1,4 +1,4 @@
-use super::{registry::Registry, LoadPhase, ModuleCtx, ModuleInst};
+use super::{registry::Registry, LoadPhase, ModuleCtx};
 use gtk::prelude::*;
 use gtk::{glib, Builder};
 use once_cell::unsync::OnceCell;
@@ -8,13 +8,22 @@ use std::rc::Rc;
 pub struct ModuleList {
     application: glib::WeakRef<gtk::Application>,
     builder: OnceCell<Builder>,
-    modules: Vec<Rc<RefCell<dyn ModuleInst>>>,
+    modules: Vec<Rc<dyn std::any::Any>>,
     registry: Registry,
 }
 
 impl ModuleCtx for ModuleList {
     fn try_get_object<T: IsA<glib::Object>>(&self, name: &'static str) -> Option<T> {
         self.builder.get().and_then(|b| b.object(name))
+    }
+
+    fn try_get_module<T: super::Module>(&self) -> Option<Rc<RefCell<T>>> {
+        for module in &self.modules {
+            if let Ok(module) = Rc::downcast::<RefCell<T>>(module.to_owned()) {
+                return Some(module);
+            }
+        }
+        None
     }
 
     fn get_application(&self) -> gtk::Application {
@@ -35,7 +44,7 @@ impl ModuleList {
 
         this.builder
             .set(Builder::from_resource("/me/workingrobot/l4/main.ui"))
-            .expect("Builder already created?");
+            .unwrap();
 
         this.load(LoadPhase::UILoad);
 
@@ -43,9 +52,8 @@ impl ModuleList {
     }
 
     fn load(&mut self, phase: LoadPhase) {
-        for module in self.registry.iter_phase(phase) {
-            println!("Loading {}", module.0.name);
-            self.modules.push(module.1(self));
+        for initializer in self.registry.iter_phase(phase) {
+            self.modules.push(initializer(self));
         }
     }
 }

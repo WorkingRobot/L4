@@ -1,6 +1,7 @@
+use std::{cell::RefCell, rc::Rc};
+
 use gtk::glib;
 use gtk::prelude::*;
-use std::cmp::Ordering;
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub enum LoadPhase {
@@ -16,42 +17,24 @@ pub trait ModuleCtx {
             .unwrap_or_else(|| panic!("Failed to get object {}", name))
     }
 
+    fn try_get_module<T: Module>(&self) -> Option<Rc<RefCell<T>>>;
+
+    fn get_module<T: Module>(&self) -> Rc<RefCell<T>> {
+        self.try_get_module::<T>()
+            .unwrap_or_else(|| panic!("Failed to get module {}", std::any::type_name::<T>()))
+    }
+
     fn get_application(&self) -> gtk::Application;
 }
 
-pub trait ModuleInst {}
-
-pub trait Module: Sized {
-    const INFO: ModuleInfo;
+pub trait Module: Sized + 'static {
+    const META: ModuleMeta;
 
     fn new(ctx: &impl ModuleCtx) -> Self;
 }
 
-impl<T: Module> ModuleInst for T {}
-
-#[derive(Eq)]
-pub struct ModuleInfo {
-    pub name: &'static str,
+#[derive(PartialEq, Eq, PartialOrd, Ord)]
+pub struct ModuleMeta {
     pub phase: LoadPhase,
     pub priority: u16,
-}
-
-impl Ord for ModuleInfo {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.phase
-            .cmp(&other.phase)
-            .then(self.priority.cmp(&other.priority))
-    }
-}
-
-impl PartialOrd for ModuleInfo {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl PartialEq for ModuleInfo {
-    fn eq(&self, other: &Self) -> bool {
-        self.phase == other.phase && self.priority == other.priority
-    }
 }

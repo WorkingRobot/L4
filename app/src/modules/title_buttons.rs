@@ -13,8 +13,7 @@ pub struct TitleButtons {
 }
 
 impl Module for TitleButtons {
-    const INFO: ModuleInfo = ModuleInfo {
-        name: "Title Buttons",
+    const META: ModuleMeta = ModuleMeta {
         phase: LoadPhase::UILoad,
         priority: 1,
     };

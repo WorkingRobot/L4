@@ -7,8 +7,7 @@ pub struct UIPostInit {
 }
 
 impl Module for UIPostInit {
-    const INFO: ModuleInfo = ModuleInfo {
-        name: "UI PostInit",
+    const META: ModuleMeta = ModuleMeta {
         phase: LoadPhase::UILoad,
         priority: 0,
     };
