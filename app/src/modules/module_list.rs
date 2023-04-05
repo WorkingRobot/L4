@@ -1,18 +1,20 @@
-use super::{Module, ModuleCtx};
+use super::{registry::Registry, LoadPhase, ModuleCtx, ModuleInst};
 use gtk::prelude::*;
-use gtk::{gdk, glib, Builder, IconTheme};
+use gtk::{glib, Builder};
+use once_cell::unsync::OnceCell;
 use std::cell::RefCell;
 use std::rc::Rc;
 
 pub struct ModuleList {
     application: glib::WeakRef<gtk::Application>,
-    builder: Builder,
-    modules: Vec<Rc<RefCell<dyn Module>>>,
+    builder: OnceCell<Builder>,
+    modules: Vec<Rc<RefCell<dyn ModuleInst>>>,
+    registry: Registry,
 }
 
 impl ModuleCtx for ModuleList {
     fn try_get_object<T: IsA<glib::Object>>(&self, name: &'static str) -> Option<T> {
-        self.builder.object(name)
+        self.builder.get().and_then(|b| b.object(name))
     }
 
     fn get_application(&self) -> gtk::Application {
@@ -22,41 +24,28 @@ impl ModuleCtx for ModuleList {
 
 impl ModuleList {
     pub fn new(application: &impl IsA<gtk::Application>) -> Self {
-        let display = gdk::Display::default().expect("Could not get a display");
-        let icon_theme = IconTheme::for_display(&display);
-        icon_theme.add_resource_path("/me/workingrobot/l4");
-        icon_theme.add_resource_path("/com/fontawesome/icons");
-
-        println!("-- searches");
-        for search_path in icon_theme.search_path() {
-            println!("{}", search_path.display());
-        }
-        println!("-- resources");
-        for search_path in icon_theme.resource_path() {
-            println!("{search_path}");
-        }
-        println!("-- end");
-
-        // Register types
-        crate::widgets::PluginModel::static_type();
-
         let mut this = Self {
             application: application.as_ref().downgrade(),
-            builder: Builder::from_resource("/me/workingrobot/l4/main.ui"),
+            builder: OnceCell::new(),
             modules: vec![],
+            registry: Registry::new(),
         };
-        this.initialize();
+
+        this.load(LoadPhase::Initialize);
+
+        this.builder
+            .set(Builder::from_resource("/me/workingrobot/l4/main.ui"))
+            .expect("Builder already created?");
+
+        this.load(LoadPhase::UILoad);
 
         this
     }
 
-    pub fn add<T: Module + 'static>(&mut self) {
-        self.modules.push(T::new(self));
-    }
-
-    fn initialize(&mut self) {
-        self.add::<super::Init>();
-        self.add::<super::TitleButtons>();
-        self.add::<super::Plugins>();
+    fn load(&mut self, phase: LoadPhase) {
+        for module in self.registry.iter_phase(phase) {
+            println!("Loading {}", module.0.name);
+            self.modules.push(module.1(self));
+        }
     }
 }

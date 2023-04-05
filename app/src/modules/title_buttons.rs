@@ -1,10 +1,8 @@
-use super::{Module, ModuleCtx};
+use super::module::*;
 use crate::utils::{signal, SignalHolder};
 use gtk::glib;
 use gtk::prelude::*;
 use gtk::traits::ButtonExt;
-use std::cell::RefCell;
-use std::rc::Rc;
 
 pub struct TitleButtons {
     _holder_settings: SignalHolder,
@@ -15,7 +13,13 @@ pub struct TitleButtons {
 }
 
 impl Module for TitleButtons {
-    fn new(ctx: &impl ModuleCtx) -> Rc<RefCell<Self>> {
+    const INFO: ModuleInfo = ModuleInfo {
+        name: "Title Buttons",
+        phase: LoadPhase::UILoad,
+        priority: 1,
+    };
+
+    fn new(ctx: &impl ModuleCtx) -> Self {
         let stack = ctx.get_object::<gtk::Stack>("main-stack");
 
         let button = ctx.get_object::<gtk::Button>("button-back");
@@ -57,12 +61,12 @@ impl Module for TitleButtons {
             gtk::Window::set_interactive_debugging(true)
         });
 
-        Rc::new(RefCell::new(Self {
+        Self {
             _holder_settings,
             _holder_about,
             _holder_debug,
             _holder_back,
             _holder_stack_switch,
-        }))
+        }
     }
 }

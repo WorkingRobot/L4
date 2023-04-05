@@ -1,7 +1,5 @@
-use super::{Module, ModuleCtx};
+use super::module::*;
 use crate::{plugins::PluginRegistrar, widgets::PluginModel};
-use std::cell::RefCell;
-use std::rc::Rc;
 
 pub struct Plugins {
     registrar: PluginRegistrar,
@@ -23,7 +21,13 @@ impl Plugins {
 }
 
 impl Module for Plugins {
-    fn new(ctx: &impl ModuleCtx) -> Rc<RefCell<Self>> {
+    const INFO: ModuleInfo = ModuleInfo {
+        name: "Plugin Registrar",
+        phase: LoadPhase::UILoad,
+        priority: 2,
+    };
+
+    fn new(ctx: &impl ModuleCtx) -> Self {
         let mut this = Self {
             registrar: PluginRegistrar::new(),
         };
@@ -35,6 +39,6 @@ impl Module for Plugins {
             store.append(&PluginModel::new(plugin));
         }
 
-        Rc::new(RefCell::new(this))
+        this
     }
 }

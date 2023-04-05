@@ -11,7 +11,7 @@ pub struct PluginRegistrar {
 
 struct PluginHandle {
     plugin: Arc<dyn Plugin>,
-    library: Library,
+    _library: Library,
 }
 
 impl PluginRegistrar {
@@ -43,15 +43,10 @@ impl PluginRegistrar {
 
         let plugin = (decl.register)(self.client.clone());
 
-        println!(
-            "Loaded {} v{} Rust v{} Core v{}",
-            plugin.name(),
-            plugin.version(),
-            decl.rustc_version,
-            decl.core_version
-        );
-
-        self.plugins.push(PluginHandle { plugin, library });
+        self.plugins.push(PluginHandle {
+            plugin,
+            _library: library,
+        });
 
         Ok(())
     }

@@ -1,15 +1,19 @@
-use super::{Module, ModuleCtx};
+use super::module::*;
 use crate::utils::{signal, SignalHolder, UsesDpi};
 use gtk::prelude::*;
-use std::cell::RefCell;
-use std::rc::Rc;
 
-pub struct Init {
+pub struct UIPostInit {
     _holder_realize: SignalHolder,
 }
 
-impl Module for Init {
-    fn new(ctx: &impl ModuleCtx) -> Rc<RefCell<Self>> {
+impl Module for UIPostInit {
+    const INFO: ModuleInfo = ModuleInfo {
+        name: "UI PostInit",
+        phase: LoadPhase::UILoad,
+        priority: 0,
+    };
+
+    fn new(ctx: &impl ModuleCtx) -> Self {
         let window = ctx.get_object::<gtk::ApplicationWindow>("window");
         window.set_application(Some(&ctx.get_application()));
 
@@ -23,6 +27,6 @@ impl Module for Init {
             settings.set_gtk_xft_dpi(win.get_dpi().unwrap_or(96) as i32 * 1024);
         });
 
-        Rc::new(RefCell::new(Self { _holder_realize }))
+        Self { _holder_realize }
     }
 }
