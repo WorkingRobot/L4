@@ -60,18 +60,18 @@ pub trait Client: Identity {}
 pub struct PluginDeclaration {
     pub rustc_version: &'static str,
     pub core_version: &'static str,
-    pub register: unsafe fn(client: Arc<dyn Client>) -> Box<dyn Plugin>,
+    pub register: unsafe fn(client: Arc<dyn Client>) -> Arc<dyn Plugin>,
 }
 
 #[macro_export]
 macro_rules! export_plugin {
-    ($register:expr) => {
+    ($register:ty) => {
         #[doc(hidden)]
         #[no_mangle]
         pub static plugin_declaration: $crate::PluginDeclaration = $crate::PluginDeclaration {
             rustc_version: $crate::RUSTC_VERSION,
             core_version: $crate::CORE_VERSION,
-            register: $register,
+            register: |client| Arc::new(plugin::Plugin::new(client)),
         };
     };
 }
