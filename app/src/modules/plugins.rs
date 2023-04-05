@@ -31,7 +31,7 @@ impl Module for Plugins {
         this.load_plugins();
 
         let store = ctx.get_object::<gtk::gio::ListStore>("games-plugin-store");
-        for plugin in (&this).registrar.iter_plugins() {
+        for plugin in this.registrar.iter_plugins() {
             store.append(&PluginModel::new(plugin));
         }
 

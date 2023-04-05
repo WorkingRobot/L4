@@ -4,68 +4,17 @@ use gtk::glib;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
 use once_cell::sync::Lazy;
-use plugins_core::{async_trait, App, AuthSession, Client, Identity, Plugin, User};
-use std::cell::RefCell;
-use std::sync::Arc;
-
-struct FakePlugin;
-
-impl Identity for FakePlugin {
-    fn id(&self) -> &str {
-        todo!()
-    }
-
-    fn name(&self) -> &str {
-        todo!()
-    }
-
-    fn description(&self) -> &str {
-        todo!()
-    }
-
-    fn version(&self) -> plugins_core::Version {
-        todo!()
-    }
-
-    fn authors(&self) -> Vec<&str> {
-        todo!()
-    }
-
-    fn repository_url(&self) -> &str {
-        todo!()
-    }
-
-    fn license(&self) -> &str {
-        todo!()
-    }
-}
-
-#[async_trait]
-impl Plugin for FakePlugin {
-    fn client(&self) -> &dyn Client {
-        unimplemented!()
-    }
-
-    async fn get_apps(&self) -> Vec<Box<dyn App>> {
-        unimplemented!()
-    }
-
-    async fn get_user(&self) -> Option<Box<dyn User>> {
-        unimplemented!()
-    }
-
-    async fn open_auth_session(&self) -> Option<Box<dyn AuthSession>> {
-        unimplemented!()
-    }
-}
+use once_cell::unsync::OnceCell;
+use plugins_core::Plugin;
+use std::sync::Weak;
 
 pub struct PluginModel {
-    plugin: RefCell<Arc<dyn Plugin>>,
+    plugin: OnceCell<Weak<dyn Plugin>>,
 }
 
 impl PluginModel {
-    pub fn set_plugin(&self, plugin: Arc<dyn Plugin>) {
-        *self.plugin.borrow_mut() = plugin;
+    pub fn set_plugin(&self, plugin: Weak<dyn Plugin>) {
+        self.plugin.set(plugin).ok().unwrap();
     }
 }
 
@@ -76,7 +25,7 @@ impl ObjectSubclass for PluginModel {
 
     fn new() -> Self {
         Self {
-            plugin: RefCell::new(Arc::new(FakePlugin {})),
+            plugin: Default::default(),
         }
     }
 }
@@ -95,13 +44,16 @@ impl ObjectImpl for PluginModel {
     }
 
     fn property(&self, _id: usize, pspec: &ParamSpec) -> Value {
-        let plugin = self.plugin.borrow();
-        return match pspec.name() {
-            "id" => plugin.id().to_value(),
-            "name" => plugin.name().to_value(),
-            "description" => plugin.description().to_value(),
-            "version" => plugin.version().to_string().to_value(),
-            _ => unimplemented!(),
-        };
+        let plugin = self.plugin.get().and_then(|w| w.upgrade());
+        if let Some(plugin) = plugin {
+            return match pspec.name() {
+                "id" => plugin.id().to_value(),
+                "name" => plugin.name().to_value(),
+                "description" => plugin.description().to_value(),
+                "version" => plugin.version().to_string().to_value(),
+                _ => unimplemented!(),
+            };
+        }
+        None::<&str>.to_value()
     }
 }

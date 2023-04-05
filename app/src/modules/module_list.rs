@@ -1,5 +1,4 @@
 use super::{Module, ModuleCtx};
-use gdk4_win32::glib::subclass::register_type;
 use gtk::prelude::*;
 use gtk::{gdk, glib, Builder, IconTheme};
 use std::cell::RefCell;

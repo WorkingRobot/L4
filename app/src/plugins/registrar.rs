@@ -56,7 +56,7 @@ impl PluginRegistrar {
         Ok(())
     }
 
-    pub fn iter_plugins(&self) -> impl Iterator<Item = Arc<dyn Plugin>> + '_ {
-        self.plugins.iter().map(|p| p.plugin.clone())
+    pub fn iter_plugins(&self) -> impl Iterator<Item = Weak<dyn Plugin>> + '_ {
+        self.plugins.iter().map(|p| Arc::downgrade(&p.plugin))
     }
 }
