@@ -5,7 +5,7 @@ use gtk::{gdk, IconTheme};
 pub struct UIPreInit;
 
 impl Module for UIPreInit {
-    const META: ModuleMeta = ModuleMeta {
+    const META: Metadata = Metadata {
         phase: LoadPhase::Initialize,
         priority: 0,
     };

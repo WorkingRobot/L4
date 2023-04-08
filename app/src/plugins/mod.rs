@@ -1,5 +1,6 @@
+mod app;
 mod client;
-mod registrar;
+mod registry;
 
 pub use client::Client;
-pub use registrar::PluginRegistrar;
+pub use registry::PluginRegistry;

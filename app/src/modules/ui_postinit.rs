@@ -7,7 +7,7 @@ pub struct UIPostInit {
 }
 
 impl Module for UIPostInit {
-    const META: ModuleMeta = ModuleMeta {
+    const META: Metadata = Metadata {
         phase: LoadPhase::UILoad,
         priority: 0,
     };

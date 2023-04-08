@@ -1,8 +1,8 @@
 use super::module::*;
-use crate::{plugins::PluginRegistrar, widgets::PluginModel};
+use crate::{plugins::PluginRegistry, widgets::PluginModel};
 
 pub struct Plugins {
-    registrar: PluginRegistrar,
+    registrar: PluginRegistry,
 }
 
 impl Plugins {
@@ -21,14 +21,14 @@ impl Plugins {
 }
 
 impl Module for Plugins {
-    const META: ModuleMeta = ModuleMeta {
+    const META: Metadata = Metadata {
         phase: LoadPhase::UILoad,
         priority: 2,
     };
 
     fn new(ctx: &impl ModuleCtx) -> Self {
         let mut this = Self {
-            registrar: PluginRegistrar::new(),
+            registrar: PluginRegistry::new(),
         };
 
         this.load_plugins();

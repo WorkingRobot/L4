@@ -2,25 +2,28 @@
 #![allow(incomplete_features)]
 
 pub use async_trait::async_trait;
+use generator::Generator;
 pub use semver::Version;
-use std::future::Future;
+use std::path::Path;
 use std::sync::Arc;
 
 pub static CORE_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub static RUSTC_VERSION: &str = env!("RUSTC_VERSION");
 
-pub trait Environment {
+pub trait InstalledApp {
+    fn id(&self) -> &str;
+    fn name(&self) -> &str;
+    fn description(&self) -> &str;
     fn version(&self) -> Version;
+    fn environment(&self) -> &str;
+    fn install_location(&self) -> &Path;
 }
 
 pub trait App {
     fn id(&self) -> &str;
     fn name(&self) -> &str;
-    fn description(&self) -> &str; // TODO: allow markdown of some kind?
-    fn short_description(&self) -> &str;
+    fn description(&self) -> &str;
     fn environments(&self) -> Vec<&str>;
-
-    fn get_environment(&self) -> dyn Future<Output = dyn Environment>;
 }
 
 pub trait User {
@@ -30,10 +33,13 @@ pub trait User {
     fn region(&self) -> Option<&str>;
 }
 
-pub trait AuthSession {
-    // TODO: continue work here, convert to async generator instead?
-    fn is_complete(&self) -> bool;
+pub enum AuthStep {
+    Complete(),
+    Fatal(),
+    Screen(),
 }
+
+pub type AuthSession<'a> = Generator<'a, AuthStep, AuthStep>;
 
 pub trait Identity: Send + Sync {
     fn id(&self) -> &str;
@@ -49,9 +55,10 @@ pub trait Identity: Send + Sync {
 pub trait Plugin: Identity {
     fn client(&self) -> &dyn Client;
 
-    async fn get_apps(&self) -> Vec<Box<dyn App>>;
     async fn get_user(&self) -> Option<Box<dyn User>>;
-    async fn open_auth_session(&self) -> Option<Box<dyn AuthSession>>;
+    async fn open_auth_session(&self) -> Option<AuthSession>;
+
+    async fn get_apps(&self) -> Option<Vec<Box<dyn App>>>;
 }
 
 pub trait Client: Identity {}

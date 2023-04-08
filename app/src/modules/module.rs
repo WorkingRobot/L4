@@ -28,13 +28,13 @@ pub trait ModuleCtx {
 }
 
 pub trait Module: Sized + 'static {
-    const META: ModuleMeta;
+    const META: Metadata;
 
     fn new(ctx: &impl ModuleCtx) -> Self;
 }
 
 #[derive(PartialEq, Eq, PartialOrd, Ord)]
-pub struct ModuleMeta {
+pub struct Metadata {
     pub phase: LoadPhase,
     pub priority: u16,
 }

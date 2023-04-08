@@ -1,4 +1,4 @@
-use super::{registry::Registry, LoadPhase, ModuleCtx};
+use super::{registry::ModuleRegistry, LoadPhase, ModuleCtx};
 use gtk::prelude::*;
 use gtk::{glib, Builder};
 use once_cell::unsync::OnceCell;
@@ -9,7 +9,7 @@ pub struct ModuleList {
     application: glib::WeakRef<gtk::Application>,
     builder: OnceCell<Builder>,
     modules: Vec<Rc<dyn std::any::Any>>,
-    registry: Registry,
+    registry: ModuleRegistry,
 }
 
 impl ModuleCtx for ModuleList {
@@ -37,7 +37,7 @@ impl ModuleList {
             application: application.as_ref().downgrade(),
             builder: OnceCell::new(),
             modules: vec![],
-            registry: Registry::new(),
+            registry: ModuleRegistry::new(),
         };
 
         this.load(LoadPhase::Initialize);

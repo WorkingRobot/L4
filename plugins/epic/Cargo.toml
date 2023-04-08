@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 plugins_core = { path = "../core" }
-reqwest = { version = "0.11.14", features = ["json"] }
-serde = { version = "1.0.154", features = ["derive"] }
-serde-enum-str = "0.3.2"
-const_format = "0.2.30"
+reqwest = { version = "*", features = ["json"] }
+serde = { version = "*", features = ["derive"] }
+serde-enum-str = "*"
+const_format = "*"

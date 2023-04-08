@@ -4,7 +4,7 @@ use plugins_core::{Plugin, PluginDeclaration};
 use std::sync::{Arc, Weak};
 use std::{io, path::Path};
 
-pub struct PluginRegistrar {
+pub struct PluginRegistry {
     client: Arc<Client>,
     plugins: Vec<PluginHandle>,
 }
@@ -14,7 +14,7 @@ struct PluginHandle {
     _library: Library,
 }
 
-impl PluginRegistrar {
+impl PluginRegistry {
     pub fn new() -> Self {
         Self {
             client: Arc::new(Client {}),

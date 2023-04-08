@@ -4,20 +4,20 @@ use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::rc::Rc;
 
-type ModuleInitializer = fn(&ModuleList) -> Rc<dyn std::any::Any>;
+type Initializer = fn(&ModuleList) -> Rc<dyn std::any::Any>;
 
-pub struct Registry {
-    imp: Lazy<BTreeMap<ModuleMeta, ModuleInitializer>>,
+pub struct ModuleRegistry {
+    imp: Lazy<BTreeMap<Metadata, Initializer>>,
 }
 
-impl Registry {
+impl ModuleRegistry {
     pub fn new() -> Self {
         Self {
             imp: Lazy::new(Self::create),
         }
     }
 
-    fn create() -> BTreeMap<ModuleMeta, ModuleInitializer> {
+    fn create() -> BTreeMap<Metadata, Initializer> {
         let mut reg = BTreeMap::new();
         Self::register::<UIPreInit>(&mut reg);
         Self::register::<UIPostInit>(&mut reg);
@@ -26,7 +26,7 @@ impl Registry {
         reg
     }
 
-    fn register<T: Module + 'static>(reg: &mut BTreeMap<ModuleMeta, ModuleInitializer>) {
+    fn register<T: Module + 'static>(reg: &mut BTreeMap<Metadata, Initializer>) {
         if reg
             .insert(T::META, |m| Rc::new(RefCell::new(T::new(m))))
             .is_some()
@@ -40,7 +40,7 @@ impl Registry {
         }
     }
 
-    pub fn iter_phase(&self, phase: LoadPhase) -> impl Iterator<Item = &ModuleInitializer> + '_ {
+    pub fn iter_phase(&self, phase: LoadPhase) -> impl Iterator<Item = &Initializer> + '_ {
         self.imp
             .iter()
             .filter(move |e| e.0.phase == phase)

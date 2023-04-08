@@ -1,5 +1,5 @@
 [workspace]
-members = ["app", "plugins/core", "plugins/epic"]
+members = ["app", "plugins/core"]
 
 [profile.release]
 lto = true
