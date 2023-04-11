@@ -86,8 +86,8 @@ pub trait ArchiveTrait: imp::ArchiveImpl + Sized + 'static {
 }
 
 pub struct Archive {
-    file: File,
-    mapping: Mmap,
+    pub(super) file: File,
+    pub(super) mapping: Mmap,
 }
 
 impl Drop for Archive {

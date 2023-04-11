@@ -1,6 +1,6 @@
-use super::file::ArchiveTrait;
 use super::structs::*;
 use super::{file::imp::ArchiveImpl, stream_mut::StreamMut};
+use super::{file::ArchiveTrait, Archive};
 use fs2::FileExt;
 use memmap2::{MmapMut, MmapOptions};
 use std::{
@@ -67,27 +67,27 @@ pub trait ArchiveMutTrait: imp::ArchiveMutImpl + ArchiveTrait {
 }
 
 pub struct ArchiveMut {
-    file: File,
-    mapping: MmapMut,
+    file: Option<File>,
+    mapping: Option<MmapMut>,
 }
 
 impl Drop for ArchiveMut {
     fn drop(&mut self) {
-        _ = self.file.unlock();
+        _ = self.file.as_ref().map(File::unlock);
     }
 }
 
 impl ArchiveImpl for ArchiveMut {
     #[inline]
     fn mapping(&self) -> &[u8] {
-        self.mapping.as_ref()
+        self.mapping.as_ref().unwrap().as_ref()
     }
 }
 
 impl imp::ArchiveMutImpl for ArchiveMut {
     #[inline]
     fn mapping_mut(&mut self) -> &mut [u8] {
-        self.mapping.as_mut()
+        self.mapping.as_mut().unwrap().as_mut()
     }
 }
 
@@ -105,7 +105,10 @@ impl ArchiveMut {
         let options = MmapOptions::new();
         let mapping = unsafe { options.map_mut(&file) }?;
 
-        let this = ArchiveMut { file, mapping };
+        let this = ArchiveMut {
+            file: Some(file),
+            mapping: Some(mapping),
+        };
 
         if let Some(err) = this.validate() {
             return Err(err);
@@ -116,5 +119,19 @@ impl ArchiveMut {
 
     pub fn create<P: AsRef<Path>>(_path: P, _options: CreateOptions) -> std::io::Result<Self> {
         todo!()
+    }
+
+    pub fn make_read_only(mut self) -> std::io::Result<Archive> {
+        if let Some(mapping) = self.mapping.take() {
+            if let Some(file) = self.file.take() {
+                let mapping = mapping.make_read_only()?;
+                return Ok(Archive { file, mapping });
+            }
+        }
+
+        Err(std::io::Error::new(
+            std::io::ErrorKind::Other,
+            "Archive is already dropped",
+        ))
     }
 }
