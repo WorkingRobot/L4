@@ -17,26 +17,19 @@ pub(super) mod imp {
         fn mapping(&self) -> &[u8];
 
         fn validate(&self) -> Option<std::io::Error> {
-            let header = self.read_type::<Header>(0);
-            if header.is_none() {
-                return Some(std::io::Error::new(
+            self.read_type::<Header>(0)
+                .ok_or(std::io::Error::new(
                     std::io::ErrorKind::Other,
                     "File is too small to hold header",
-                ));
-            }
-            let header = header.unwrap();
-
-            if self
-                .read_type::<Freelist>(header.freelist_offset())
-                .is_none()
-            {
-                return Some(std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    "File is too small to hold freelist",
-                ));
-            }
-
-            None
+                ))
+                .and_then(|header| {
+                    self.read_type::<Freelist>(header.freelist_offset())
+                        .ok_or(std::io::Error::new(
+                            std::io::ErrorKind::Other,
+                            "File is too small to hold freelist",
+                        ))
+                })
+                .err()
         }
 
         #[inline]
@@ -50,7 +43,7 @@ pub(super) mod imp {
     }
 }
 
-pub trait ArchiveTrait: imp::ArchiveImpl + 'static {
+pub trait ArchiveTrait: imp::ArchiveImpl + Sized + 'static {
     #[inline]
     fn header(&self) -> &Header {
         self.read_type::<Header>(0).unwrap()
@@ -79,6 +72,16 @@ pub trait ArchiveTrait: imp::ArchiveImpl + 'static {
             start: range.start as usize * sector_size,
             end: range.end as usize * sector_size,
         })
+    }
+
+    fn stream(&self, stream_idx: u32) -> Option<Stream<Self>> {
+        if self.stream_header(stream_idx).is_some() && self.stream_runlist(stream_idx).is_some() {
+            return Some(Stream {
+                archive: self,
+                stream_idx,
+            });
+        }
+        None
     }
 }
 
@@ -117,15 +120,5 @@ impl Archive {
         }
 
         Ok(this)
-    }
-
-    pub fn stream(&self, stream_idx: u32) -> Option<Stream<Self>> {
-        if self.stream_header(stream_idx).is_some() && self.stream_runlist(stream_idx).is_some() {
-            return Some(Stream {
-                archive: self,
-                stream_idx,
-            });
-        }
-        None
     }
 }

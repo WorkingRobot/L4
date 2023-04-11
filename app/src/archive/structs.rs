@@ -88,6 +88,7 @@ pub struct ArchiveString<const N: usize> {
 }
 
 impl Header {
+    #[inline]
     fn align_offset(value: usize, align_to: usize) -> usize {
         (value + align_to - 1) & !(align_to - 1)
     }

@@ -1,6 +1,6 @@
+use super::file::ArchiveTrait;
 use super::structs::*;
 use super::{file::imp::ArchiveImpl, stream_mut::StreamMut};
-use super::{file::ArchiveTrait, stream::Stream};
 use fs2::FileExt;
 use memmap2::{MmapMut, MmapOptions};
 use std::{
@@ -54,6 +54,16 @@ pub trait ArchiveMutTrait: imp::ArchiveMutImpl + ArchiveTrait {
             end: range.end as usize * sector_size,
         })
     }
+
+    fn stream_mut(&mut self, stream_idx: u32) -> Option<StreamMut<Self>> {
+        if self.stream_header(stream_idx).is_some() && self.stream_runlist(stream_idx).is_some() {
+            return Some(StreamMut {
+                archive: self,
+                stream_idx,
+            });
+        }
+        None
+    }
 }
 
 pub struct ArchiveMut {
@@ -106,26 +116,5 @@ impl ArchiveMut {
 
     pub fn create<P: AsRef<Path>>(_path: P, _options: CreateOptions) -> std::io::Result<Self> {
         todo!()
-    }
-
-    pub fn stream(&self, stream_idx: u32) -> Option<Stream<Self>> {
-        if self.stream_header(stream_idx).is_some() && self.stream_runlist(stream_idx).is_some() {
-            return Some(Stream {
-                archive: self,
-                stream_idx,
-            });
-        }
-
-        None
-    }
-
-    pub fn stream_mut(&mut self, stream_idx: u32) -> Option<StreamMut<Self>> {
-        if self.stream_header(stream_idx).is_some() && self.stream_runlist(stream_idx).is_some() {
-            return Some(StreamMut {
-                archive: self,
-                stream_idx,
-            });
-        }
-        None
     }
 }
