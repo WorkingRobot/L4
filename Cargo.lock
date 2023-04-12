@@ -819,6 +819,7 @@ dependencies = [
  "memmap2",
  "once_cell",
  "plugins_core",
+ "semver",
  "static_assertions",
  "superslice",
  "windows 0.48.0",
