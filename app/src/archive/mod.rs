@@ -1,5 +1,6 @@
 mod file;
 mod file_mut;
+mod lockable_file;
 mod stream;
 mod stream_mut;
 mod structs;

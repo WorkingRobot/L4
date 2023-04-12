@@ -1,14 +1,9 @@
 use self::imp::ArchiveImpl;
 
-use super::stream::Stream;
-use super::structs::*;
-use fs2::FileExt;
+use super::{lockable_file::Lock, structs::*};
+use super::{lockable_file::LockableFile, stream::Stream};
 use memmap2::{Mmap, MmapOptions};
-use std::{
-    fs::{File, OpenOptions},
-    ops::Range,
-    path::Path,
-};
+use std::{fs::OpenOptions, ops::Range, path::Path};
 
 pub(super) mod imp {
     use crate::archive::structs::{Freelist, Header};
@@ -16,7 +11,7 @@ pub(super) mod imp {
     pub trait ArchiveImpl {
         fn mapping(&self) -> &[u8];
 
-        fn validate(&self) -> Option<std::io::Error> {
+        fn validate(&self) -> std::io::Result<()> {
             self.read_type::<Header>(0)
                 .ok_or(std::io::Error::new(
                     std::io::ErrorKind::Other,
@@ -28,8 +23,8 @@ pub(super) mod imp {
                             std::io::ErrorKind::Other,
                             "File is too small to hold freelist",
                         ))
-                })
-                .err()
+                })?;
+            Ok(())
         }
 
         #[inline]
@@ -86,14 +81,8 @@ pub trait ArchiveTrait: imp::ArchiveImpl + Sized + 'static {
 }
 
 pub struct Archive {
-    pub(super) file: File,
+    pub(super) file: LockableFile,
     pub(super) mapping: Mmap,
-}
-
-impl Drop for Archive {
-    fn drop(&mut self) {
-        _ = self.file.unlock();
-    }
 }
 
 impl imp::ArchiveImpl for Archive {
@@ -107,17 +96,14 @@ impl ArchiveTrait for Archive {}
 
 impl Archive {
     pub fn new<P: AsRef<Path>>(path: P) -> std::io::Result<Self> {
-        let file = OpenOptions::new().read(true).open(path)?;
-        file.try_lock_shared()?;
+        let file =
+            LockableFile::try_from_file(OpenOptions::new().read(true).open(path)?, Lock::Shared)?;
 
         let options = MmapOptions::new();
-        let mapping = unsafe { options.map(&file) }?;
+        let mapping = unsafe { options.map(&*file) }?;
 
         let this = Archive { file, mapping };
-
-        if let Some(err) = this.validate() {
-            return Err(err);
-        }
+        this.validate()?;
 
         Ok(this)
     }
