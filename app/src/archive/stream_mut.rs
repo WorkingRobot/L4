@@ -105,7 +105,7 @@ impl<A: ArchiveMutTrait> StreamMutTrait<A> for StreamMutIter<'_, A> {}
 impl<A: ArchiveMutTrait> StreamMutIter<'_, A> {
     // Cannot impl Iterator until LendingIterator
     // becomes part of the standard library
-    // Just use a `while let Some(slice) = iter.next` loop for now
+    // Just use a `while let Some(slice) = iter.next()` loop for now
     pub fn next(&mut self) -> Option<&mut [u8]> {
         if self.current_run_idx > self.end_run_idx {
             return None;
