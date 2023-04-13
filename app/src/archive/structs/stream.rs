@@ -7,7 +7,7 @@ use super::{Reserved, Validatable};
 #[derive(Debug, Copy, Clone)]
 pub struct StreamRunlist {
     pub entry_count: u32,
-    _reserved: [u8; 4],
+    pub reserved: Reserved<4>,
     pub size: u64,
     pub entries: [StreamEntry; 1023],
 }
@@ -20,7 +20,7 @@ pub struct StreamEntry {
     pub stream_sector_offset: u32,
     pub sector_offset: u32,
     pub sector_count: u32,
-    _reserved: [u8; 4],
+    pub reserved: Reserved<4>,
 }
 
 assert_eq_size!(StreamEntry, [u8; 16]);

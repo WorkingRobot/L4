@@ -1,8 +1,8 @@
 use crate::utils::align;
 
 use super::{
-    Freelist, SmallString, StreamHeader, StreamRunlist, Validatable, VersionString, HEADER_MAGIC,
-    SECTOR_SIZE_RANGE,
+    calculate_max_stream_count_aligned, Freelist, Reserved, SmallString, StreamHeader,
+    StreamRunlist, Validatable, VersionString, HEADER_MAGIC, SECTOR_SIZE_RANGE,
 };
 use static_assertions::assert_eq_size;
 use std::mem::size_of;
@@ -22,7 +22,7 @@ pub struct Header {
     pub plugin_name: SmallString,
     pub app_name: SmallString,
     pub environment: SmallString,
-    _reserved: [u8; 12],
+    pub reserved: Reserved<12>,
 }
 
 assert_eq_size!(Header, [u8; 256]);
@@ -130,6 +130,7 @@ impl Validatable for Header {
         self.plugin_name.validate()?;
         self.app_name.validate()?;
         self.environment.validate()?;
+        self.reserved.validate()?;
 
         Ok(())
     }

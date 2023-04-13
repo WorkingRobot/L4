@@ -1,11 +1,11 @@
-use super::SmallString;
+use super::{Reserved, SmallString, Validatable};
 use static_assertions::assert_eq_size;
 
 #[repr(C, packed)]
 #[derive(Debug, Copy, Clone)]
 pub struct StreamHeader {
     pub id: SmallString,
-    _reserved: [u8; 32],
+    reserved: Reserved<32>,
     pub context: [u8; 192],
 }
 
