@@ -47,6 +47,34 @@ impl<const N: usize> Validatable for ArchiveString<N> {
     }
 }
 
+impl<const N: usize> TryFrom<&str> for ArchiveString<N> {
+    type Error = std::io::Error;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        if value.len() > N {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "value should be at most N characters",
+            ));
+        }
+
+        let mut this = Self {
+            size: value.len() as u8,
+            data: [0; N],
+        };
+        this.data[..value.len()].copy_from_slice(value.as_bytes());
+
+        Ok(this)
+    }
+}
+
+impl<const N: usize> Default for ArchiveString<N> {
+    fn default() -> Self {
+        // Panics if N < "Unknown".len()
+        "Unknown".try_into().unwrap()
+    }
+}
+
 pub type SmallString = ArchiveString<31>;
 pub type LargeString = ArchiveString<127>;
 
@@ -66,6 +94,22 @@ impl TryFrom<VersionString> for SemVersion {
                 "VersionString should be a valid SemVer string",
             )
         })
+    }
+}
+
+impl TryFrom<SemVersion> for VersionString {
+    type Error = std::io::Error;
+
+    fn try_from(value: SemVersion) -> Result<Self, Self::Error> {
+        Ok(Self {
+            inner: value.to_string().as_str().try_into()?,
+        })
+    }
+}
+
+impl Default for VersionString {
+    fn default() -> Self {
+        SemVersion::new(0, 0, 0).try_into().unwrap()
     }
 }
 
