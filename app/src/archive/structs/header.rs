@@ -78,6 +78,27 @@ impl Header {
     }
 }
 
+impl Default for Header {
+    fn default() -> Self {
+        Self {
+            magic: HEADER_MAGIC,
+            version: Version::UseRust,
+            sector_size: *SECTOR_SIZE_RANGE.start(),
+            stream_count: 0,
+            max_stream_count: calculate_max_stream_count_aligned(*SECTOR_SIZE_RANGE.start(), 1)
+                .unwrap(),
+            plugin_id: Default::default(),
+            app_id: Default::default(),
+            plugin_version: Default::default(),
+            app_version: Default::default(),
+            plugin_name: Default::default(),
+            app_name: Default::default(),
+            environment: Default::default(),
+            reserved: Default::default(),
+        }
+    }
+}
+
 impl Validatable for Header {
     fn validate(&self) -> std::io::Result<()> {
         if self.magic != HEADER_MAGIC {

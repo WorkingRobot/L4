@@ -1,7 +1,47 @@
 use std::ops::RangeInclusive;
 
+use crate::utils::align;
+
+use super::StreamHeader;
+
 pub const HEADER_MAGIC: u32 = 0x6b2de8b2;
 pub const SECTOR_SIZE_RANGE: RangeInclusive<u32> = 1 << 12..=1 << 20;
+
+pub fn calculate_max_stream_count_multiplier(sector_size: u32, multiplier: u32) -> Option<u32> {
+    if !sector_size.is_power_of_two() {
+        return None;
+    }
+
+    if !SECTOR_SIZE_RANGE.contains(&sector_size) {
+        return None;
+    }
+
+    let stream_headers_per_sector = sector_size / std::mem::size_of::<StreamHeader>() as u32;
+
+    Some(stream_headers_per_sector * multiplier - 1)
+}
+
+pub fn calculate_max_stream_count_aligned(
+    sector_size: u32,
+    minimum_stream_count: u32,
+) -> Option<u32> {
+    if !sector_size.is_power_of_two() {
+        return None;
+    }
+
+    if !SECTOR_SIZE_RANGE.contains(&sector_size) {
+        return None;
+    }
+
+    let stream_headers_per_sector = sector_size / std::mem::size_of::<StreamHeader>() as u32;
+
+    Some(
+        (align(
+            minimum_stream_count as usize,
+            stream_headers_per_sector as usize,
+        ) - 1) as u32,
+    )
+}
 
 pub trait Validatable {
     fn validate(&self) -> std::io::Result<()>;

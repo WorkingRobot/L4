@@ -85,7 +85,10 @@ impl ArchiveTrait for ArchiveMut {}
 
 impl ArchiveMutTrait for ArchiveMut {}
 
-pub struct CreateOptions;
+pub struct CreateOptions {
+    pub sector_size: u32,
+    pub requested_stream_count: u32,
+}
 
 impl ArchiveMut {
     pub fn new<P: AsRef<Path>>(path: P) -> std::io::Result<Self> {
@@ -103,8 +106,33 @@ impl ArchiveMut {
         Ok(this)
     }
 
-    pub fn create<P: AsRef<Path>>(_path: P, _options: CreateOptions) -> std::io::Result<Self> {
-        todo!()
+    pub fn create<P: AsRef<Path>>(path: P, options: CreateOptions) -> std::io::Result<Self> {
+        let file = LockableFile::try_from_file(
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .create_new(true)
+                .open(path)?,
+            Lock::Exclusive,
+        )?;
+
+        let mapping = unsafe { MmapOptions::new().len(1 << 30).map_mut(&*file) }?;
+
+        let max_stream_count =
+            calculate_max_stream_count_aligned(options.sector_size, options.requested_stream_count)
+                .ok_or(std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    "Sector size is invalid",
+                ))?;
+
+        let mut this = ArchiveMut { file, mapping };
+        *this.header_mut() = Header {
+            sector_size: options.sector_size,
+            max_stream_count,
+            ..Default::default()
+        };
+
+        Ok(this)
     }
 
     pub fn make_read_only(mut self) -> std::io::Result<Archive> {
