@@ -1,3 +1,5 @@
+use crate::utils::align;
+
 use super::{
     Freelist, SmallString, StreamHeader, StreamRunlist, Validatable, VersionString, HEADER_MAGIC,
     SECTOR_SIZE_RANGE,
@@ -37,15 +39,10 @@ pub enum Version {
 }
 
 impl Header {
-    #[inline]
-    fn align_offset(value: usize, align_to: usize) -> usize {
-        (value + align_to - 1) & !(align_to - 1)
-    }
-
     pub fn freelist_offset(&self) -> usize {
         let header_size = size_of::<Header>();
         let stream_header_size = size_of::<StreamHeader>();
-        Self::align_offset(
+        align(
             header_size + self.max_stream_count as usize * stream_header_size,
             self.sector_size as usize,
         )
@@ -54,7 +51,7 @@ impl Header {
     pub fn file_data_offset(&self) -> usize {
         let freelist_size = size_of::<Freelist>();
         let stream_runlist_size = size_of::<StreamRunlist>();
-        Self::align_offset(
+        align(
             self.freelist_offset()
                 + freelist_size
                 + self.max_stream_count as usize * stream_runlist_size,
