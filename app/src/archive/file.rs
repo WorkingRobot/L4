@@ -6,7 +6,7 @@ use memmap2::{Mmap, MmapOptions};
 use std::{fs::OpenOptions, ops::Range, path::Path};
 
 pub(super) mod imp {
-    use crate::archive::structs::{Freelist, Header};
+    use crate::archive::structs::{Freelist, Header, Validatable};
 
     pub trait ArchiveImpl {
         fn mapping(&self) -> &[u8];
@@ -17,13 +17,15 @@ pub(super) mod imp {
                     std::io::ErrorKind::Other,
                     "File is too small to hold header",
                 ))
+                .and_then(|header| header.validate().and(Ok(header)))
                 .and_then(|header| {
                     self.read_type::<Freelist>(header.freelist_offset())
                         .ok_or(std::io::Error::new(
                             std::io::ErrorKind::Other,
                             "File is too small to hold freelist",
                         ))
-                })?;
+                })
+                .and_then(|freelist| freelist.validate().and(Ok(freelist)))?;
             Ok(())
         }
 

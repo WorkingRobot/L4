@@ -10,3 +10,12 @@ pub struct StreamHeader {
 }
 
 assert_eq_size!(StreamHeader, [u8; 256]);
+
+impl Validatable for StreamHeader {
+    fn validate(&self) -> std::io::Result<()> {
+        self.id.validate()?;
+        self.reserved.validate()?;
+
+        Ok(())
+    }
+}

@@ -1,6 +1,8 @@
 use static_assertions::assert_eq_size;
 use std::ops::{Deref, Range};
 
+use super::{Reserved, Validatable};
+
 #[repr(C, packed)]
 #[derive(Debug, Copy, Clone)]
 pub struct StreamRunlist {
@@ -51,5 +53,40 @@ impl StreamEntry {
             start: self.stream_sector_offset,
             end: self.stream_sector_offset + self.sector_count,
         }
+    }
+}
+
+impl Validatable for StreamRunlist {
+    fn validate(&self) -> std::io::Result<()> {
+        self.reserved.validate()?;
+
+        if self.entry_count as usize > self.entries.len() {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "Entry count should be less than the length of the entries array",
+            ));
+        }
+
+        let mut expected_sector_offset: u32 = 0;
+        for entry in self.entries {
+            entry.validate()?;
+
+            if entry.stream_sector_offset != expected_sector_offset {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    "Stream sector offset should monotonically increase for every entry",
+                ));
+            }
+
+            expected_sector_offset += entry.sector_count;
+        }
+
+        Ok(())
+    }
+}
+
+impl Validatable for StreamEntry {
+    fn validate(&self) -> std::io::Result<()> {
+        self.reserved.validate()
     }
 }
