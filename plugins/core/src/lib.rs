@@ -2,7 +2,7 @@
 #![allow(incomplete_features)]
 
 pub use async_trait::async_trait;
-use generator::Generator;
+//use generator::Generator;
 pub use semver::Version;
 use std::path::Path;
 use std::sync::Arc;
@@ -39,7 +39,7 @@ pub enum AuthStep {
     Screen(),
 }
 
-pub type AuthSession<'a> = Generator<'a, AuthStep, AuthStep>;
+pub type AuthSession<'a> = &'a i32; //Generator<'a, AuthStep, AuthStep>;
 
 pub trait Identity: Send + Sync {
     fn id(&self) -> &str;

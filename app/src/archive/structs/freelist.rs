@@ -1,7 +1,9 @@
+use crate::archive::heap::{pop_heap, push_heap};
+
 use super::super::heap::is_heap;
 use super::Validatable;
 use static_assertions::assert_eq_size;
-use std::ops::{Deref, Range};
+use std::ops::{Deref, DerefMut, Range};
 
 #[repr(C, packed)]
 #[derive(Debug, Copy, Clone)]
@@ -31,9 +33,39 @@ impl Deref for Freelist {
     }
 }
 
+impl DerefMut for Freelist {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        let entry_count = usize::min(self.entry_count as usize, self.entries.len());
+        &mut self.entries[..entry_count]
+    }
+}
+
 impl AsRef<[FreelistEntry]> for Freelist {
     fn as_ref(&self) -> &[FreelistEntry] {
         self.deref()
+    }
+}
+
+impl Freelist {
+    pub fn push(&mut self, entry: FreelistEntry) -> Option<()> {
+        if self.entry_count as usize == self.entries.len() {
+            None
+        } else {
+            self.entries[self.entry_count as usize] = entry;
+            self.entry_count += 1;
+            push_heap(self);
+            Some(())
+        }
+    }
+
+    pub fn pop(&mut self) -> Option<FreelistEntry> {
+        if self.entry_count == 0 {
+            None
+        } else {
+            pop_heap(self);
+            self.entry_count -= 1;
+            Some(self.entries[self.entry_count as usize])
+        }
     }
 }
 

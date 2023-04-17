@@ -51,7 +51,7 @@ ApplicationWindow window {
               };
               model: SingleSelection {
                 model: Gio.ListStore games-plugin-store {
-                  item-type: typeof($L4PluginModel);
+                  item-type: typeof<$L4PluginModel>;
                 };
               };
             }
@@ -63,7 +63,7 @@ ApplicationWindow window {
               };
               model: SingleSelection {
                 model: Gio.ListStore games-game-store {
-                  item-type: typeof($L4AppModel);
+                  item-type: typeof<$L4AppModel>;
                 };
               };
             }

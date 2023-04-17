@@ -23,6 +23,7 @@ fs2 = "*"
 static_assertions = "*"
 superslice = "*"
 semver = "*"
+may = "*"
 
 [build-dependencies]
 embed-manifest = "*"

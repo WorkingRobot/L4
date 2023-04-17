@@ -1,5 +1,3 @@
-use crate::utils::align;
-
 use super::{
     calculate_max_stream_count_aligned, Freelist, Reserved, SmallString, StreamHeader,
     StreamRunlist, Validatable, VersionString, HEADER_MAGIC, SECTOR_SIZE_RANGE,
@@ -42,21 +40,17 @@ impl Header {
     pub fn freelist_offset(&self) -> usize {
         let header_size = size_of::<Header>();
         let stream_header_size = size_of::<StreamHeader>();
-        align(
-            header_size + self.max_stream_count as usize * stream_header_size,
-            self.sector_size as usize,
-        )
+        (header_size + self.max_stream_count as usize * stream_header_size)
+            .next_multiple_of(self.sector_size as usize)
     }
 
     pub fn file_data_offset(&self) -> usize {
         let freelist_size = size_of::<Freelist>();
         let stream_runlist_size = size_of::<StreamRunlist>();
-        align(
-            self.freelist_offset()
-                + freelist_size
-                + self.max_stream_count as usize * stream_runlist_size,
-            self.sector_size as usize,
-        )
+        (self.freelist_offset()
+            + freelist_size
+            + self.max_stream_count as usize * stream_runlist_size)
+            .next_multiple_of(self.sector_size as usize)
     }
 
     pub fn stream_header_offset(&self, stream_idx: u32) -> Option<usize> {

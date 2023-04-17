@@ -7,6 +7,8 @@ use std::{fs::OpenOptions, ops::Range, path::Path};
 
 mod imp {
     pub trait ArchiveMutImpl {
+        fn reserve(&mut self, minimum: usize) -> Option<()>;
+
         fn mapping_mut(&mut self) -> &mut [u8];
 
         #[inline]
@@ -75,6 +77,10 @@ impl ArchiveImpl for ArchiveMut {
 }
 
 impl imp::ArchiveMutImpl for ArchiveMut {
+    fn reserve(&mut self, minimum: usize) -> Option<()> {
+        None
+    }
+
     #[inline]
     fn mapping_mut(&mut self) -> &mut [u8] {
         self.mapping.as_mut()

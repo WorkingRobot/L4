@@ -1,6 +1,6 @@
 use super::file::ArchiveTrait;
 use super::structs::*;
-use std::ops::Range;
+use std::{cmp::Ordering, ops::Range};
 use superslice::Ext;
 
 pub trait StreamImpl<A: ArchiveTrait> {
@@ -22,8 +22,16 @@ pub trait StreamTrait<A: ArchiveTrait>: StreamImpl<A> {
         self.header().id.as_str()
     }
 
+    fn capacity(&self) -> u64 {
+        self.capacity_in_sectors() as u64 * self.archive().header().sector_size as u64
+    }
+
     fn len(&self) -> u64 {
         self.runlist().size
+    }
+
+    fn is_empty(&self) -> bool {
+        self.len() == 0
     }
 
     fn capacity_in_sectors(&self) -> u32 {
@@ -33,24 +41,27 @@ pub trait StreamTrait<A: ArchiveTrait>: StreamImpl<A> {
             .unwrap_or_default()
     }
 
-    fn capacity(&self) -> u64 {
-        self.capacity_in_sectors() as u64 * self.archive().header().sector_size as u64
-    }
-
     fn calculate_byte_location(&self, offset: u64) -> Option<(u32, u64)> {
-        let sector_size = self.archive().header().sector_size as u64;
-        let stream_sector_idx = (offset / sector_size) as u32;
-        let run_idx = self.runlist().lower_bound_by_key(&stream_sector_idx, |r| {
-            r.stream_sector_offset + r.sector_count
-        });
-        if run_idx as u32 == self.runlist().entry_count {
-            return None;
+        match offset.cmp(&self.len()) {
+            Ordering::Greater => None,
+            Ordering::Equal => Some((self.runlist().run_count, 0)),
+            Ordering::Less => {
+                let sector_size = self.archive().header().sector_size as u64;
+                let stream_sector_idx = (offset / sector_size) as u32;
+                let run_idx = self.runlist().lower_bound_by_key(&stream_sector_idx, |r| {
+                    r.stream_sector_offset + r.sector_count
+                }) as u32;
+                if run_idx == self.runlist().run_count {
+                    return None;
+                }
+                Some((
+                    run_idx,
+                    offset
+                        - (self.runlist()[run_idx as usize].stream_sector_offset as u64
+                            * sector_size),
+                ))
+            }
         }
-        let run = &self.runlist()[run_idx];
-        Some((
-            run_idx as u32,
-            offset - (run.stream_sector_offset as u64 * sector_size),
-        ))
     }
 
     fn iter_bytes(&self, range: Range<u64>) -> Option<StreamIter<A>> {
@@ -113,7 +124,7 @@ impl<A: ArchiveTrait> StreamTrait<A> for StreamIter<'_, A> {
 impl<'a, A: ArchiveTrait> Iterator for StreamIter<'a, A> {
     type Item = &'a [u8];
 
-    fn next(&mut self) -> Option<&'a [u8]> {
+    fn next(&mut self) -> Option<Self::Item> {
         if self.current_run_idx > self.end_run_idx {
             return None;
         }
@@ -124,8 +135,8 @@ impl<'a, A: ArchiveTrait> Iterator for StreamIter<'a, A> {
         self.current_run_offset = 0;
         self.current_run_idx += 1;
 
-        let run = &self.runlist()[run_idx];
-        let mut slice: &'a [u8] = self.archive.get_sectors(run.archive_sector_range())?;
+        let run = &self.runlist().get(run_idx)?;
+        let mut slice = self.archive.get_sectors(run.archive_sector_range())?;
         if run_idx == self.end_run_idx {
             slice = &slice[..self.end_run_offset];
         }

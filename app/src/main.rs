@@ -1,4 +1,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+#![feature(int_roundings)]
 #[allow(dead_code)]
 mod archive;
 mod modules;

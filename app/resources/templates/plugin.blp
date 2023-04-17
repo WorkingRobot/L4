@@ -8,16 +8,16 @@ template GtkListItem {
     orientation: vertical;
     
     Label {
-      label: bind (GtkListItem.item) as ($L4PluginModel).name;
+      label: bind GtkListItem.item as <$L4PluginModel>.name;
     }
     Label {
-      label: bind (GtkListItem.item) as ($L4PluginModel).id;
+      label: bind GtkListItem.item as <$L4PluginModel>.id;
     }
     Label {
-      label: bind (GtkListItem.item) as ($L4PluginModel).version;
+      label: bind GtkListItem.item as <$L4PluginModel>.version;
     }
     Label {
-      label: bind (GtkListItem.item) as ($L4PluginModel).description;
+      label: bind GtkListItem.item as <$L4PluginModel>.description;
     }
   };
 }
