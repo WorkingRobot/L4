@@ -1,6 +1,7 @@
 #![feature(trait_alias)]
 #![feature(async_fn_in_trait)]
 #![allow(incomplete_features)]
+#![allow(dead_code)]
 
 use std::sync::Arc;
 

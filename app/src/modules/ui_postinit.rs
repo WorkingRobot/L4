@@ -1,5 +1,5 @@
 use super::module::*;
-use crate::utils::{signal, SignalHolder, UsesDpi};
+use deps::utils::{signal, SignalHolder, UsesDpi};
 use gtk::prelude::*;
 
 pub struct UIPostInit {

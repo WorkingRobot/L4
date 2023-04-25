@@ -47,7 +47,7 @@ impl plugins_core::Plugin for Plugin {
         self.client.as_ref()
     }
 
-    async fn get_apps(&self) -> Vec<Box<dyn App>> {
+    async fn get_apps(&self) -> Option<Vec<Box<dyn App>>> {
         unimplemented!()
     }
 
@@ -55,7 +55,7 @@ impl plugins_core::Plugin for Plugin {
         unimplemented!()
     }
 
-    async fn open_auth_session(&self) -> Option<Box<dyn AuthSession>> {
+    async fn open_auth_session(&self) -> Option<AuthSession> {
         unimplemented!()
     }
 }

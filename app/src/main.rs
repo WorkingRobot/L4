@@ -1,14 +1,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-#![feature(int_roundings)]
-#[allow(dead_code)]
-mod archive;
-mod mmio;
 mod modules;
-mod plugins;
-mod utils;
 mod widgets;
 
-use archive::*;
+use deps::archive::{ArchiveMut, ArchiveMutTrait, StreamMutTrait};
 use gtk::prelude::*;
 use gtk::{gio, glib};
 use widgets::Application;

@@ -1,5 +1,5 @@
 use super::module::*;
-use crate::utils::{signal, SignalHolder};
+use deps::utils::{signal, SignalHolder};
 use gtk::glib;
 use gtk::prelude::*;
 use gtk::traits::ButtonExt;

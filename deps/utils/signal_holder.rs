@@ -23,10 +23,11 @@ impl Drop for SignalHolder {
     }
 }
 
+#[macro_export]
 macro_rules! signal {
     ($object:ident, $name:ident, $($closure:tt)+) => {
-        crate::utils::SignalHolder::new($object.upcast_ref::<gtk::Widget>(), $object.$name($($closure)+))
+        ::deps::utils::SignalHolder::new($object.upcast_ref::<gtk::Widget>(), $object.$name($($closure)+))
     };
 }
 
-pub(crate) use signal;
+pub use signal;

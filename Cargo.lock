@@ -192,6 +192,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "deps"
+version = "0.1.0"
+dependencies = [
+ "fs2",
+ "gdk4-win32",
+ "gtk4",
+ "libloading",
+ "ntapi",
+ "plugins_core",
+ "semver",
+ "static_assertions",
+ "superslice",
+ "winapi",
+ "windows",
+]
+
+[[package]]
 name = "embed-manifest"
 version = "1.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -877,20 +894,12 @@ name = "l4"
 version = "0.1.0"
 dependencies = [
  "build-scripts",
+ "deps",
  "embed-manifest",
- "fs2",
- "gdk4-win32",
  "gtk4",
  "libadwaita",
- "libloading",
- "ntapi",
  "once_cell",
  "plugins_core",
- "semver",
- "static_assertions",
- "superslice",
- "winapi",
- "windows",
  "winres",
 ]
 

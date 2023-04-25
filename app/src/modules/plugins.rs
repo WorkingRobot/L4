@@ -1,5 +1,6 @@
 use super::module::*;
-use crate::{plugins::PluginRegistry, widgets::PluginModel};
+use crate::widgets::PluginModel;
+use deps::plugins::PluginRegistry;
 
 pub struct Plugins {
     registrar: PluginRegistry,
