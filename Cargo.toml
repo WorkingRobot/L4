@@ -1,5 +1,6 @@
 [workspace]
-members = ["plugins/test"]
+members = ["app", "plugins/epic"]
 
 [profile.release]
-lto = true
+strip = "debuginfo"
+lto = "thin"

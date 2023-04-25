@@ -146,18 +146,6 @@ pub trait StreamMutTrait<A: ArchiveMutTrait>: StreamMutImpl<A> + StreamTrait<A> 
         }
     }
 
-    fn push(&mut self, value: u8) {
-        todo!()
-    }
-
-    fn push_within_capacity(&mut self, value: u8) -> Result<(), u8> {
-        todo!()
-    }
-
-    fn pop(&mut self) -> Option<u8> {
-        todo!()
-    }
-
     fn clear(&mut self) {
         todo!()
     }
@@ -184,7 +172,7 @@ pub trait StreamMutTrait<A: ArchiveMutTrait>: StreamMutImpl<A> + StreamTrait<A> 
         }
     }
 
-    fn resize_sectors(&mut self, new_len: u32) {
+    fn resize_sectors(&mut self, _new_len: u32) {
         todo!()
     }
 

@@ -2,6 +2,7 @@
 #![feature(int_roundings)]
 #[allow(dead_code)]
 mod archive;
+mod mmio;
 mod modules;
 mod plugins;
 mod utils;

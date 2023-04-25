@@ -2,8 +2,8 @@ use super::lockable_file::{Lock, LockableFile};
 use super::structs::*;
 use super::{file::imp::ArchiveImpl, stream_mut::StreamMut};
 use super::{file::ArchiveTrait, Archive};
-use memmap2::{MmapMut, MmapOptions};
-use std::{fs::OpenOptions, ops::Range, path::Path};
+use crate::mmio::MappedFileMut;
+use std::{fs::OpenOptions, ops::Range, os::windows::prelude::AsRawHandle, path::Path};
 
 mod imp {
     pub trait ArchiveMutImpl {
@@ -66,7 +66,7 @@ pub trait ArchiveMutTrait: imp::ArchiveMutImpl + ArchiveTrait {
 
 pub struct ArchiveMut {
     file: LockableFile,
-    mapping: MmapMut,
+    mapping: MappedFileMut,
 }
 
 impl ArchiveImpl for ArchiveMut {
@@ -78,7 +78,7 @@ impl ArchiveImpl for ArchiveMut {
 
 impl imp::ArchiveMutImpl for ArchiveMut {
     fn reserve(&mut self, minimum: usize) -> Option<()> {
-        None
+        unsafe { self.mapping.reserve(minimum) }.ok()
     }
 
     #[inline]
@@ -103,8 +103,7 @@ impl ArchiveMut {
             Lock::Exclusive,
         )?;
 
-        let options = MmapOptions::new();
-        let mapping = unsafe { options.map_mut(&*file) }?;
+        let mapping = unsafe { MappedFileMut::new(file.as_raw_handle()) }?;
 
         let this = ArchiveMut { file, mapping };
         this.validate()?;
@@ -122,7 +121,7 @@ impl ArchiveMut {
             Lock::Exclusive,
         )?;
 
-        let mapping = unsafe { MmapOptions::new().len(1 << 30).map_mut(&*file) }?;
+        let mapping = unsafe { MappedFileMut::new(file.as_raw_handle()) }?;
 
         let max_stream_count =
             calculate_max_stream_count_aligned(options.sector_size, options.requested_stream_count)
@@ -141,8 +140,8 @@ impl ArchiveMut {
         Ok(this)
     }
 
-    pub fn make_read_only(mut self) -> std::io::Result<Archive> {
-        let mapping = self.mapping.make_read_only()?;
+    pub fn into_read_only(mut self) -> std::io::Result<Archive> {
+        let mapping = self.mapping.into_read_only();
         self.file.downgrade()?;
         Ok(Archive {
             file: self.file,

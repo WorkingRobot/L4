@@ -2,8 +2,8 @@ use self::imp::ArchiveImpl;
 
 use super::{lockable_file::Lock, structs::*};
 use super::{lockable_file::LockableFile, stream::Stream};
-use memmap2::{Mmap, MmapOptions};
-use std::{fs::OpenOptions, ops::Range, path::Path};
+use crate::mmio::MappedFile;
+use std::{fs::OpenOptions, ops::Range, os::windows::prelude::AsRawHandle, path::Path};
 
 pub(super) mod imp {
     use crate::archive::structs::{Freelist, Header, Validatable};
@@ -84,7 +84,7 @@ pub trait ArchiveTrait: imp::ArchiveImpl + Sized + 'static {
 
 pub struct Archive {
     pub(super) file: LockableFile,
-    pub(super) mapping: Mmap,
+    pub(super) mapping: MappedFile,
 }
 
 impl imp::ArchiveImpl for Archive {
@@ -101,8 +101,7 @@ impl Archive {
         let file =
             LockableFile::try_from_file(OpenOptions::new().read(true).open(path)?, Lock::Shared)?;
 
-        let options = MmapOptions::new();
-        let mapping = unsafe { options.map(&*file) }?;
+        let mapping = unsafe { MappedFile::new(file.as_raw_handle()) }?;
 
         let this = Archive { file, mapping };
         this.validate()?;

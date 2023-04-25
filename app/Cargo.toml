@@ -13,19 +13,19 @@ CompanyName = "WorkingRobot"
 [dependencies]
 libloading = "*"
 plugins_core = { path = "../plugins/core" }
-adw = {package = "libadwaita", version = "0.3.1"}
-gtk = {package = "gtk4", version = "0.6.4", features = ["v4_10", "blueprint"]}
+adw = { package = "libadwaita", version = "0.3.1"}
+gtk = { package = "gtk4", version = "0.6.4", features = ["v4_10", "blueprint"] }
 gdk4-win32 = "*"
-windows = { version = "*", features = ["Win32_UI_HiDpi", "Win32_Foundation"]}
+windows = { version = "*", features = ["Win32_UI_HiDpi", "Win32_Foundation"] }
 once_cell = "*"
-memmap2 = "*"
-fs2 = "*"
 static_assertions = "*"
+fs2 = "*"
 superslice = "*"
 semver = "*"
-may = "*"
+ntapi = "*"
+winapi = { version = "*", features = ["std"] }
 
 [build-dependencies]
 embed-manifest = "*"
 winres = "*"
-build-scripts = {path = "build"}
+build-scripts = { path = "build" }

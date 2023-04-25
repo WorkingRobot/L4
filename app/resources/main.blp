@@ -59,6 +59,8 @@ ApplicationWindow window {
             [start]
             ListView games-game-view {
               factory: BuilderListItemFactory {
+                // Holding off on using template {} syntax until
+                // https://gitlab.gnome.org/jwestman/blueprint-compiler/-/issues/110 is fixed
                 resource: "/me/workingrobot/l4/templates/game.ui";
               };
               model: SingleSelection {
