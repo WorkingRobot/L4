@@ -26,6 +26,28 @@ impl PluginRegistry {
         &mut self,
         file_path: P,
     ) -> Result<(), Box<dyn std::error::Error>> {
+        self.plugins
+            .push(PluginHandle::new(file_path, self.client.clone())?);
+
+        Ok(())
+    }
+
+    pub fn iter_plugins(&self) -> impl Iterator<Item = Weak<dyn Plugin>> + '_ {
+        self.plugins.iter().map(|p| Arc::downgrade(&p.plugin))
+    }
+}
+
+impl Default for PluginRegistry {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl PluginHandle {
+    unsafe fn new<P: AsRef<Path>>(
+        file_path: P,
+        client: Arc<Client>,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
         let library = Library::new(file_path.as_ref().as_os_str())?;
 
         let decl = library
@@ -41,17 +63,11 @@ impl PluginRegistry {
             )));
         }
 
-        let plugin = (decl.register)(self.client.clone());
+        let plugin = (decl.register)(client);
 
-        self.plugins.push(PluginHandle {
+        Ok(Self {
             plugin,
             _library: library,
-        });
-
-        Ok(())
-    }
-
-    pub fn iter_plugins(&self) -> impl Iterator<Item = Weak<dyn Plugin>> + '_ {
-        self.plugins.iter().map(|p| Arc::downgrade(&p.plugin))
+        })
     }
 }
