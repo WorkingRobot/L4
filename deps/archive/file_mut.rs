@@ -103,7 +103,7 @@ impl ArchiveMut {
             Lock::Exclusive,
         )?;
 
-        let mapping = unsafe { MappedFileMut::new(file.as_raw_handle()) }?;
+        let mapping = unsafe { MappedFileMut::new(&*file) }?;
 
         let this = ArchiveMut { file, mapping };
         this.validate()?;

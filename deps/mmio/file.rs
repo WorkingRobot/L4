@@ -3,19 +3,19 @@ use std::{
     io,
     mem::ManuallyDrop,
     ops::Deref,
-    os::windows::io::{FromRawHandle, RawHandle},
+    os::windows::{io::FromRawHandle, prelude::RawHandle},
     slice,
 };
 
-use super::mmap::Section;
+use super::mmap::{AsRawDescriptor, Section};
 
 pub struct MappedFile {
     pub(super) section: Section,
 }
 
 impl MappedFile {
-    pub unsafe fn new(handle: RawHandle) -> io::Result<Self> {
-        let mut section = Section::new(handle, calculate_section_size(handle)?, false)?;
+    pub unsafe fn new<T: AsRawDescriptor>(file: T) -> io::Result<Self> {
+        let mut section = Section::new(file, false)?;
         section.map()?;
 
         Ok(Self { section })

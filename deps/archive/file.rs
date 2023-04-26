@@ -101,7 +101,7 @@ impl Archive {
         let file =
             LockableFile::try_from_file(OpenOptions::new().read(true).open(path)?, Lock::Shared)?;
 
-        let mapping = unsafe { MappedFile::new(file.as_raw_handle()) }?;
+        let mapping = unsafe { MappedFile::new(&*file) }?;
 
         let this = Archive { file, mapping };
         this.validate()?;

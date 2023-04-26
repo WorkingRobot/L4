@@ -1,6 +1,9 @@
 use std::{
     io,
-    os::{raw::c_void, windows::prelude::RawHandle},
+    os::{
+        raw::c_void,
+        windows::prelude::{AsRawHandle, RawHandle},
+    },
 };
 
 use ntapi::{
@@ -9,7 +12,28 @@ use ntapi::{
 };
 use winapi::um::{processthreadsapi::GetCurrentProcess, winnt::LARGE_INTEGER};
 
+use super::file::calculate_section_size;
+
 const VIEW_SIZE_INCREMENT: usize = 1 << 37; // 128 gb
+
+pub trait AsRawDescriptor {
+    fn as_raw_descriptor(&self) -> RawHandle;
+}
+
+impl AsRawDescriptor for RawHandle {
+    fn as_raw_descriptor(&self) -> RawHandle {
+        *self
+    }
+}
+
+impl<'a, T> AsRawDescriptor for &'a T
+where
+    T: AsRawHandle,
+{
+    fn as_raw_descriptor(&self) -> RawHandle {
+        self.as_raw_handle()
+    }
+}
 
 trait AsNTSTATUS {
     fn as_ntstatus(&self) -> windows::Win32::Foundation::NTSTATUS;
@@ -82,11 +106,10 @@ impl Drop for Section {
 }
 
 impl Section {
-    pub unsafe fn new(
-        file_handle: RawHandle,
-        section_size: usize,
-        writable: bool,
-    ) -> io::Result<Self> {
+    pub unsafe fn new<T: AsRawDescriptor>(file: T, writable: bool) -> io::Result<Self> {
+        let file_handle = file.as_raw_descriptor();
+        let section_size = calculate_section_size(file_handle)?;
+
         let permissions = MapPermissions::new(writable);
 
         let mut section_handle = std::ptr::null_mut();

@@ -5,22 +5,25 @@ use std::{
     slice,
 };
 
-use super::{file::calculate_section_size, mmap::Section, MappedFile};
+use super::{
+    mmap::{AsRawDescriptor, Section},
+    MappedFile,
+};
 
 pub struct MappedFileMut {
     section: Section,
 }
 
 impl MappedFileMut {
-    pub unsafe fn new(handle: RawHandle) -> io::Result<Self> {
-        let mut section = Section::new(handle, calculate_section_size(handle)?, true)?;
+    pub unsafe fn new<T: AsRawDescriptor>(file: T) -> io::Result<Self> {
+        let mut section = Section::new(file, true)?;
         section.map()?;
 
         Ok(Self { section })
     }
 
     pub fn into_read_only(mut self) -> MappedFile {
-        // writable is always true, this will never fail
+        // writable is always true, this unwrap will never fail
         self.section.make_read_only().unwrap();
         MappedFile {
             section: self.section,
