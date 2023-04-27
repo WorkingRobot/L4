@@ -1,9 +1,10 @@
 use self::imp::ArchiveImpl;
 
-use super::{lockable_file::Lock, structs::*};
-use super::{lockable_file::LockableFile, stream::Stream};
+use super::stream::Stream;
+use super::structs::*;
 use crate::mmio::MappedFile;
-use std::{fs::OpenOptions, ops::Range, os::windows::prelude::AsRawHandle, path::Path};
+use crate::utils::{Lock, LockableFile};
+use std::{fs::OpenOptions, ops::Range, path::Path};
 
 pub(super) mod imp {
     use crate::archive::structs::{Freelist, Header, Validatable};

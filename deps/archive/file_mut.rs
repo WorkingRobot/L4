@@ -1,8 +1,8 @@
-use super::lockable_file::{Lock, LockableFile};
 use super::structs::*;
 use super::{file::imp::ArchiveImpl, stream_mut::StreamMut};
 use super::{file::ArchiveTrait, Archive};
 use crate::mmio::MappedFileMut;
+use crate::utils::{Lock, LockableFile};
 use std::{fs::OpenOptions, ops::Range, os::windows::prelude::AsRawHandle, path::Path};
 
 mod imp {
