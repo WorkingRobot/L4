@@ -1,3 +1,8 @@
+use super::file::calculate_section_size;
+use ntapi::{
+    ntmmapi::{NtCreateSection, NtExtendSection, NtMapViewOfSection, NtUnmapViewOfSection},
+    ntobapi::NtClose,
+};
 use std::{
     io,
     os::{
@@ -5,14 +10,8 @@ use std::{
         windows::prelude::{AsRawHandle, RawHandle},
     },
 };
-
-use ntapi::{
-    ntmmapi::{NtCreateSection, NtExtendSection, NtMapViewOfSection, NtUnmapViewOfSection},
-    ntobapi::NtClose,
-};
 use winapi::um::{processthreadsapi::GetCurrentProcess, winnt::LARGE_INTEGER};
-
-use super::file::calculate_section_size;
+use windows::Win32::System::Memory::FlushViewOfFile;
 
 const VIEW_SIZE_INCREMENT: usize = 1 << 37; // 128 gb
 
@@ -94,6 +93,9 @@ pub struct Section {
     section_size: usize,
     ptr: Option<*mut c_void>,
 }
+
+unsafe impl Sync for Section {}
+unsafe impl Send for Section {}
 
 impl Drop for Section {
     fn drop(&mut self) {
@@ -224,6 +226,22 @@ impl Section {
         self.permissions = MapPermissions::new(false);
 
         Some(())
+    }
+
+    // Flushes part of file asynchronously.
+    // Call `File::datasync()` afterwards to ensure flushes.
+    pub fn flush(&self, offset: usize, len: usize) -> io::Result<()> {
+        if len == 0 {
+            return Ok(());
+        }
+        if let Some(ptr) = self.ptr {
+            unsafe { FlushViewOfFile(ptr.add(offset), len) }.ok()?;
+            return Ok(());
+        }
+        Err(io::Error::new(
+            io::ErrorKind::NotFound,
+            "Mapping does not exist",
+        ))
     }
 
     #[inline]

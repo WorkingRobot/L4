@@ -1,7 +1,6 @@
 use std::{
     io,
     ops::{Deref, DerefMut},
-    os::windows::prelude::RawHandle,
     slice,
 };
 
@@ -32,6 +31,14 @@ impl MappedFileMut {
 
     pub unsafe fn reserve(&mut self, size: usize) -> io::Result<()> {
         self.section.reserve(size)
+    }
+
+    pub fn flush(&self) -> io::Result<()> {
+        self.section.flush(0, self.len())
+    }
+
+    pub fn flush_range(&self, offset: usize, len: usize) -> io::Result<()> {
+        self.section.flush(offset, len)
     }
 }
 
