@@ -16,5 +16,8 @@ winapi = { version = "*", features = ["std"] }
 fs2 = "*"
 superslice = "*"
 
+[dev-dependencies]
+tempfile = "*"
+
 [lib]
 path = "lib.rs"
