@@ -7,22 +7,24 @@ use crate::utils::{Lock, LockableFile};
 use std::{fs::OpenOptions, ops::Range, path::Path};
 
 pub(super) mod imp {
+    use std::io;
+
     use crate::archive::structs::{Freelist, Header, Validatable};
 
     pub trait ArchiveImpl {
         fn mapping(&self) -> &[u8];
 
-        fn validate(&self) -> std::io::Result<()> {
+        fn validate(&self) -> io::Result<()> {
             self.read_type::<Header>(0)
-                .ok_or(std::io::Error::new(
-                    std::io::ErrorKind::Other,
+                .ok_or(io::Error::new(
+                    io::ErrorKind::Other,
                     "File is too small to hold header",
                 ))
                 .and_then(|header| header.validate().and(Ok(header)))
                 .and_then(|header| {
                     self.read_type::<Freelist>(header.freelist_offset())
-                        .ok_or(std::io::Error::new(
-                            std::io::ErrorKind::Other,
+                        .ok_or(io::Error::new(
+                            io::ErrorKind::Other,
                             "File is too small to hold freelist",
                         ))
                 })

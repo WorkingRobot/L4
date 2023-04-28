@@ -3,7 +3,7 @@ use super::{file::imp::ArchiveImpl, stream_mut::StreamMut};
 use super::{file::ArchiveTrait, Archive};
 use crate::mmio::MappedFileMut;
 use crate::utils::{Lock, LockableFile};
-use std::{fs::OpenOptions, ops::Range, os::windows::prelude::AsRawHandle, path::Path};
+use std::{fs::OpenOptions, io, ops::Range, os::windows::prelude::AsRawHandle, path::Path};
 
 mod imp {
     pub trait ArchiveMutImpl {
@@ -97,7 +97,7 @@ pub struct CreateOptions {
 }
 
 impl ArchiveMut {
-    pub fn new<P: AsRef<Path>>(path: P) -> std::io::Result<Self> {
+    pub fn new<P: AsRef<Path>>(path: P) -> io::Result<Self> {
         let file = LockableFile::try_from_file(
             OpenOptions::new().read(true).write(true).open(path)?,
             Lock::Exclusive,
@@ -111,7 +111,7 @@ impl ArchiveMut {
         Ok(this)
     }
 
-    pub fn create<P: AsRef<Path>>(path: P, options: CreateOptions) -> std::io::Result<Self> {
+    pub fn create<P: AsRef<Path>>(path: P, options: CreateOptions) -> io::Result<Self> {
         let file = LockableFile::try_from_file(
             OpenOptions::new()
                 .read(true)
@@ -125,8 +125,8 @@ impl ArchiveMut {
 
         let max_stream_count =
             calculate_max_stream_count_aligned(options.sector_size, options.requested_stream_count)
-                .ok_or(std::io::Error::new(
-                    std::io::ErrorKind::InvalidData,
+                .ok_or(io::Error::new(
+                    io::ErrorKind::InvalidData,
                     "Sector size is invalid",
                 ))?;
 
@@ -140,7 +140,7 @@ impl ArchiveMut {
         Ok(this)
     }
 
-    pub fn into_read_only(mut self) -> std::io::Result<Archive> {
+    pub fn into_read_only(mut self) -> io::Result<Archive> {
         let mapping = self.mapping.into_read_only();
         self.file.downgrade()?;
         Ok(Archive {
