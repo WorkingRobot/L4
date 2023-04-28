@@ -2,6 +2,7 @@ use super::{
     calculate_max_stream_count_aligned, Freelist, Reserved, SmallString, StreamHeader,
     StreamRunlist, Validatable, VersionString, HEADER_MAGIC, SECTOR_SIZE_RANGE,
 };
+use crate::utils::Alignable;
 use static_assertions::assert_eq_size;
 use std::mem::size_of;
 
@@ -41,7 +42,7 @@ impl Header {
         let header_size = size_of::<Header>();
         let stream_header_size = size_of::<StreamHeader>();
         (header_size + self.max_stream_count as usize * stream_header_size)
-            .next_multiple_of(self.sector_size as usize)
+            .align_to(self.sector_size as usize)
     }
 
     pub fn file_data_offset(&self) -> usize {
@@ -50,7 +51,7 @@ impl Header {
         (self.freelist_offset()
             + freelist_size
             + self.max_stream_count as usize * stream_runlist_size)
-            .next_multiple_of(self.sector_size as usize)
+            .align_to(self.sector_size as usize)
     }
 
     pub fn stream_header_offset(&self, stream_idx: u32) -> Option<usize> {

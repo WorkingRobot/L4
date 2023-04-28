@@ -1,6 +1,6 @@
-use std::ops::RangeInclusive;
-
 use super::StreamHeader;
+use crate::utils::Alignable;
+use std::ops::RangeInclusive;
 
 pub const HEADER_MAGIC: u32 = 0x6b2de8b2;
 pub const SECTOR_SIZE_RANGE: RangeInclusive<u32> = 1 << 12..=1 << 20;
@@ -33,7 +33,7 @@ pub fn calculate_max_stream_count_aligned(
 
     let stream_headers_per_sector = sector_size / std::mem::size_of::<StreamHeader>() as u32;
 
-    Some(minimum_stream_count.next_multiple_of(stream_headers_per_sector) - 1)
+    Some(minimum_stream_count.align_to(stream_headers_per_sector) - 1)
 }
 
 pub trait Validatable {

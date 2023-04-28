@@ -1,6 +1,7 @@
 use super::stream::StreamImpl;
 use super::structs::*;
 use super::{file_mut::ArchiveMutTrait, stream::StreamTrait};
+use crate::utils::Alignable;
 use std::ops::Range;
 
 pub trait StreamMutImpl<A: ArchiveMutTrait> {
@@ -163,9 +164,7 @@ pub trait StreamMutTrait<A: ArchiveMutTrait>: StreamMutImpl<A> + StreamTrait<A> 
 
     fn resize(&mut self, new_len: u64) {
         if new_len > self.len() {
-            self.reserve_sectors(
-                new_len.next_multiple_of(self.archive().header().sector_size as u64) as u32,
-            );
+            self.reserve_sectors(new_len.align_to(self.archive().header().sector_size) as u32);
             self.runlist_mut().size = new_len;
         } else {
             self.truncate(new_len);

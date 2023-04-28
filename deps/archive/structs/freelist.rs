@@ -1,7 +1,6 @@
-use crate::archive::heap::{pop_heap, push_heap};
-
 use super::super::heap::is_heap;
 use super::Validatable;
+use crate::archive::heap::{pop_heap, push_heap};
 use static_assertions::assert_eq_size;
 use std::ops::{Deref, DerefMut, Range};
 

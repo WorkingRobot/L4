@@ -1,3 +1,5 @@
+use crate::utils::Alignable;
+
 use super::file::calculate_section_size;
 use ntapi::{
     ntmmapi::{NtCreateSection, NtExtendSection, NtMapViewOfSection, NtUnmapViewOfSection},
@@ -207,7 +209,7 @@ impl Section {
 
     fn view_size(&self) -> usize {
         if self.permissions.writable {
-            self.section_size.next_multiple_of(VIEW_SIZE_INCREMENT)
+            self.section_size.align_to(VIEW_SIZE_INCREMENT)
         } else {
             self.section_size
         }

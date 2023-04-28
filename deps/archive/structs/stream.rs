@@ -1,7 +1,6 @@
+use super::{Reserved, Validatable};
 use static_assertions::assert_eq_size;
 use std::ops::{Deref, DerefMut, Range};
-
-use super::{Reserved, Validatable};
 
 #[repr(C, packed)]
 #[derive(Debug, Copy, Clone)]

@@ -1,5 +1,4 @@
 use self::imp::ArchiveImpl;
-
 use super::stream::Stream;
 use super::structs::*;
 use crate::mmio::MappedFile;

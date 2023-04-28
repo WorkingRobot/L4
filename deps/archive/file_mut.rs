@@ -1,6 +1,6 @@
-use super::structs::*;
 use super::{file::imp::ArchiveImpl, stream_mut::StreamMut};
 use super::{file::ArchiveTrait, Archive};
+use super::{structs::*, StreamTrait};
 use crate::mmio::MappedFileMut;
 use crate::utils::{Lock, LockableFile};
 use std::{fs::OpenOptions, io, ops::Range, os::windows::prelude::AsRawHandle, path::Path};
@@ -61,6 +61,21 @@ pub trait ArchiveMutTrait: imp::ArchiveMutImpl + ArchiveTrait {
             });
         }
         None
+    }
+
+    fn create_stream(&mut self) -> Option<StreamMut<Self>> {
+        if self.header().stream_count == self.header().max_stream_count {
+            return None;
+        }
+
+        self.header_mut().stream_count += 1;
+
+        let stream = self.stream_mut(self.header().stream_count - 1).unwrap();
+
+        let _ = stream.header().validate_empty().unwrap();
+        let _ = stream.runlist().validate_empty().unwrap();
+
+        Some(stream)
     }
 }
 
