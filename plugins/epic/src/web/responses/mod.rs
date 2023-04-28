@@ -10,9 +10,9 @@ pub use get_statuspage_summary::GetStatuspageSummary;
 mod oauth_token;
 pub use oauth_token::{OAuthToken, OAuthTokenUser};
 
-#[derive(serde::Deserialize, Debug)]
-pub struct GetAccount;
-#[derive(serde::Deserialize, Debug)]
+mod get_account;
+pub use get_account::GetAccount;
+
 pub struct GetAccountExternalAuths;
 #[derive(serde::Deserialize, Debug)]
 pub struct GetAccounts;
