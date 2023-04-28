@@ -43,6 +43,25 @@ impl<const N: usize> Validatable for ArchiveString<N> {
                     Ok(())
                 }
             })?;
+
+        if self.data[self.size as usize..].iter().any(|b| b != &0u8) {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "ArchiveString should not have any data outside its valid range",
+            ));
+        }
+
+        Ok(())
+    }
+
+    fn validate_empty(&self) -> std::io::Result<()> {
+        if self.size != 0 || self.data.iter().any(|b| b != &0u8) {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "String should be empty and filled with zeroes",
+            ));
+        }
+
         Ok(())
     }
 }
@@ -115,7 +134,16 @@ impl Default for VersionString {
 
 impl Validatable for VersionString {
     fn validate(&self) -> std::io::Result<()> {
+        self.inner.validate()?;
+
         let _: SemVersion = (*self).try_into()?;
+
+        Ok(())
+    }
+
+    fn validate_empty(&self) -> std::io::Result<()> {
+        self.inner.validate_empty()?;
+
         Ok(())
     }
 }

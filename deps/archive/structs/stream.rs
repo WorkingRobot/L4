@@ -84,6 +84,17 @@ impl StreamRun {
     }
 }
 
+impl Default for StreamRunlist {
+    fn default() -> Self {
+        Self {
+            run_count: 0,
+            reserved: Default::default(),
+            size: 0,
+            runs: [Default::default(); 1023],
+        }
+    }
+}
+
 impl Validatable for StreamRunlist {
     fn validate(&self) -> std::io::Result<()> {
         self.reserved.validate()?;
@@ -96,7 +107,7 @@ impl Validatable for StreamRunlist {
         }
 
         let mut expected_sector_offset: u32 = 0;
-        for entry in self.runs {
+        for entry in &self.runs[..self.run_count as usize] {
             entry.validate()?;
 
             if entry.stream_sector_offset != expected_sector_offset {
@@ -109,12 +120,54 @@ impl Validatable for StreamRunlist {
             expected_sector_offset += entry.sector_count;
         }
 
+        let (valid_runs, empty_runs) = self.runs.split_at(self.run_count as usize);
+        if valid_runs.iter().any(|r| r.validate().is_err())
+            || empty_runs.iter().any(|r| r.validate_empty().is_err())
+        {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "All used runs should be valid and all unused runs should be empty",
+            ));
+        }
+
+        Ok(())
+    }
+
+    fn validate_empty(&self) -> std::io::Result<()> {
+        if self.run_count != 0 {}
+
+        self.reserved.validate_empty()?;
+
+        if self.size != 0 {}
+
         Ok(())
     }
 }
 
 impl Validatable for StreamRun {
     fn validate(&self) -> std::io::Result<()> {
-        self.reserved.validate()
+        if self.sector_count == 0 {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "Run sector count should be nonzero",
+            ));
+        }
+
+        self.reserved.validate()?;
+
+        Ok(())
+    }
+
+    fn validate_empty(&self) -> std::io::Result<()> {
+        if self.stream_sector_offset != 0 || self.sector_offset != 0 || self.sector_offset != 0 {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "Entry should be all zeroes",
+            ));
+        }
+
+        self.reserved.validate_empty()?;
+
+        Ok(())
     }
 }

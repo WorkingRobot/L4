@@ -109,6 +109,44 @@ impl Validatable for Freelist {
             ));
         }
 
+        let (valid_entries, empty_entries) = self.entries.split_at(self.entry_count as usize);
+        if valid_entries.iter().any(|e| e.validate().is_err())
+            || empty_entries.iter().any(|e| e.validate_empty().is_err())
+        {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "All used entries should be valid and all unused entries should be empty",
+            ));
+        }
+
+        Ok(())
+    }
+
+    fn validate_empty(&self) -> std::io::Result<()> {
+        unimplemented!()
+    }
+}
+
+impl Validatable for FreelistEntry {
+    fn validate(&self) -> std::io::Result<()> {
+        if self.sector_count == 0 {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "Entry sector count should be nonzero",
+            ));
+        }
+
+        Ok(())
+    }
+
+    fn validate_empty(&self) -> std::io::Result<()> {
+        if self.sector_count != 0 || self.sector_offset != 0 {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "Entry should be all zeroes",
+            ));
+        }
+
         Ok(())
     }
 }

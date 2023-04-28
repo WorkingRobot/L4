@@ -37,7 +37,11 @@ pub fn calculate_max_stream_count_aligned(
 }
 
 pub trait Validatable {
+    // Ensures the data contains valid data
     fn validate(&self) -> std::io::Result<()>;
+
+    // Ensures the data contains empty, untouched data
+    fn validate_empty(&self) -> std::io::Result<()>;
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -53,6 +57,10 @@ impl<const N: usize> Default for Reserved<N> {
 
 impl<const N: usize> Validatable for Reserved<N> {
     fn validate(&self) -> std::io::Result<()> {
+        self.validate_empty()
+    }
+
+    fn validate_empty(&self) -> std::io::Result<()> {
         if self.data.iter().all(|b| b == &0u8) {
             Ok(())
         } else {

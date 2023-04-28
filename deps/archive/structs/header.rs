@@ -149,4 +149,8 @@ impl Validatable for Header {
 
         Ok(())
     }
+
+    fn validate_empty(&self) -> std::io::Result<()> {
+        unimplemented!()
+    }
 }
