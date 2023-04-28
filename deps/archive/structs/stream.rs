@@ -158,7 +158,7 @@ impl Validatable for StreamRun {
     }
 
     fn validate_empty(&self) -> std::io::Result<()> {
-        if self.stream_sector_offset != 0 || self.sector_offset != 0 || self.sector_offset != 0 {
+        if self.stream_sector_offset != 0 || self.sector_offset != 0 || self.sector_count != 0 {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::InvalidData,
                 "Entry should be all zeroes",

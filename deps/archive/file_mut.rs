@@ -1,4 +1,4 @@
-use super::{file::imp::ArchiveImpl, stream_mut::StreamMut};
+use super::{file::imp::ArchiveImpl, stream_mut::StreamMut, StreamMutTrait};
 use super::{file::ArchiveTrait, Archive};
 use super::{structs::*, StreamTrait};
 use crate::mmio::MappedFileMut;
@@ -63,7 +63,7 @@ pub trait ArchiveMutTrait: imp::ArchiveMutImpl + ArchiveTrait {
         None
     }
 
-    fn create_stream(&mut self) -> Option<StreamMut<Self>> {
+    fn push_stream(&mut self) -> Option<StreamMut<Self>> {
         if self.header().stream_count == self.header().max_stream_count {
             return None;
         }
@@ -72,10 +72,31 @@ pub trait ArchiveMutTrait: imp::ArchiveMutImpl + ArchiveTrait {
 
         let stream = self.stream_mut(self.header().stream_count - 1).unwrap();
 
-        let _ = stream.header().validate_empty().unwrap();
-        let _ = stream.runlist().validate_empty().unwrap();
+        _ = stream.header().validate_empty().unwrap();
+        _ = stream.runlist().validate_empty().unwrap();
 
         Some(stream)
+    }
+
+    fn pop_stream(&mut self) -> Option<()> {
+        if self.header().stream_count == 0 {
+            return None;
+        }
+
+        let mut stream = self.stream_mut(self.header().stream_count - 1).unwrap();
+        if stream.runlist().size != 0 {
+            return None;
+        }
+        if stream.runlist().run_count != 0 {
+            return None;
+        }
+
+        *stream.header_mut() = Default::default();
+        *stream.runlist_mut() = Default::default();
+
+        self.header_mut().stream_count -= 1;
+
+        Some(())
     }
 }
 
