@@ -72,8 +72,8 @@ pub trait ArchiveMutTrait: imp::ArchiveMutImpl + ArchiveTrait {
 
         let stream = self.stream_mut(self.header().stream_count - 1).unwrap();
 
-        _ = stream.header().validate_empty().unwrap();
-        _ = stream.runlist().validate_empty().unwrap();
+        stream.header().validate_empty().unwrap();
+        stream.runlist().validate_empty().unwrap();
 
         Some(stream)
     }

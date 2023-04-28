@@ -6,6 +6,9 @@
 use std::sync::Arc;
 
 mod plugin;
+mod user;
 mod web;
 
 plugins_core::export_plugin!(plugin::Plugin);
+
+pub use user::*;

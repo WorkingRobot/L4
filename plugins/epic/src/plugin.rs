@@ -1,13 +1,22 @@
-use plugins_core::{async_trait, App, AuthSession, Client, User, Version};
+use crate::web::ClientAuthed;
+
+use super::User;
+use plugins_core::{async_trait, App, AuthSession, Client, Version};
 use std::sync::Arc;
 
 pub struct Plugin {
     client: Arc<dyn Client>,
+    user: Option<User>,
+    web_client: Option<ClientAuthed>,
 }
 
 impl Plugin {
     pub fn new(client: Arc<dyn Client>) -> Self {
-        Self { client }
+        Self {
+            client,
+            user: None,
+            web_client: None,
+        }
     }
 }
 
@@ -47,11 +56,15 @@ impl plugins_core::Plugin for Plugin {
         self.client.as_ref()
     }
 
-    async fn get_apps(&self) -> Option<Vec<Box<dyn App>>> {
-        unimplemented!()
+    async fn get_available_apps(&self) -> Option<Vec<Box<dyn App>>> {
+        if self.get_user().await.is_some() {
+            Some(vec![])
+        } else {
+            None
+        }
     }
 
-    async fn get_user(&self) -> Option<Box<dyn User>> {
+    async fn get_user(&self) -> Option<Box<dyn plugins_core::User>> {
         unimplemented!()
     }
 

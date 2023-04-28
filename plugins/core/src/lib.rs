@@ -35,7 +35,7 @@ pub trait User {
 }
 
 pub enum AuthStep {
-    Complete(),
+    Complete(Box<dyn User>),
     Fatal(),
     Screen(),
 }
@@ -59,7 +59,7 @@ pub trait Plugin: Identity {
     async fn get_user(&self) -> Option<Box<dyn User>>;
     async fn open_auth_session(&self) -> Option<AuthSession>;
 
-    async fn get_apps(&self) -> Option<Vec<Box<dyn App>>>;
+    async fn get_available_apps(&self) -> Option<Vec<Box<dyn App>>>;
 }
 
 pub trait Client: Identity {}
