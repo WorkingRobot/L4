@@ -14,11 +14,10 @@ impl Client {
         })
     }
 
-    pub fn get_page_info(&self, language: &str) -> impl FutureResult<GetPageInfo> {
-        self.client
-            .get(format_url!(FortniteContent, "pages/fortnite-game"))
-            .query(&[("lang", language)])
-            .send_into::<GetPageInfo>()
+    pub fn get_page_info(&self, _language: &str) {
+        // Not implementing this anymore; fortnite doesn't like using this endpoint.
+        // I don't know if stw still uses it
+        unimplemented!()
     }
 
     pub fn get_blog_posts(

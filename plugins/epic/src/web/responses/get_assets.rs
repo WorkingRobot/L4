@@ -1,39 +1,39 @@
 #[derive(serde::Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-struct AssetMetadata {
+pub struct AssetMetadata {
     // Not too sure what this is, looks like a guid like the other values
-    installation_pool_id: Option<String>,
+    pub installation_pool_id: Option<String>,
 }
 
 #[derive(serde::Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-struct Asset {
+pub struct Asset {
     // Name of the app
-    app_name: String,
+    pub app_name: String,
 
     // Label of the app
-    label_name: String,
+    pub label_name: String,
 
     // Version of the app
-    build_version: String,
+    pub build_version: String,
 
     // Catalog id of the app
-    catalog_item_id: String,
+    pub catalog_item_id: String,
 
     // Namespace of the app
-    namespace: String,
+    pub namespace: String,
 
     // Any metadata for the app (optional)
-    metadata: Option<AssetMetadata>,
+    pub metadata: Option<AssetMetadata>,
 
     // Asset id?
-    asset_id: String,
+    pub asset_id: String,
 }
 
 #[derive(serde::Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-struct GetAssets {
+pub struct GetAssets {
     // A list of all assets available to the user
     #[serde(flatten)]
-    assets: Vec<Asset>,
+    pub assets: Vec<Asset>,
 }

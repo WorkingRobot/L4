@@ -2,7 +2,7 @@ use serde_enum_str::Deserialize_enum_str as DeserializeEnum;
 
 #[derive(DeserializeEnum, Debug, Eq, PartialEq)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-enum BuildStatusEnum {
+pub enum BuildStatusType {
     Deprecated,
     NotDeprecated,
     #[serde(other)]
@@ -11,20 +11,20 @@ enum BuildStatusEnum {
 
 #[derive(serde::Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-struct BuildStatus {
+pub struct BuildStatus {
     // Not given by CheckLauncherVersion
-    app: Option<String>,
+    pub app: Option<String>,
 
-    status: BuildStatusEnum,
+    pub status: BuildStatusType,
 }
 
 #[derive(serde::Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-struct GetLauncherDownloadInfo {
+pub struct GetLauncherDownloadInfo {
     #[serde(flatten)]
-    base: super::GetDownloadInfo,
+    pub base: super::GetDownloadInfo,
 
     // Only provided if ClientVersion is given: A list of build statuses (only 1 item)
     #[serde(rename = "buildStatuses")]
-    statuses: Vec<BuildStatus>,
+    pub statuses: Vec<BuildStatus>,
 }

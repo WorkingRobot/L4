@@ -26,7 +26,6 @@ add_module!(get_friends_summary);
 add_module!(get_friends);
 add_module!(get_launcher_download_info);
 add_module!(get_lightswitch_status);
-add_module!(get_page_info);
 add_module!(get_statuspage_summary);
 add_module!(oauth_token);
 add_module!(query_profile);

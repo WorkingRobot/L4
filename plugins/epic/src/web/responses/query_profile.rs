@@ -2,52 +2,52 @@ use std::{collections::HashMap, time::SystemTime};
 
 #[derive(serde::Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-struct Item {
-    template_id: String,
-    attributes: serde_json::Value,
-    quantity: i32,
+pub struct Item {
+    pub template_id: String,
+    pub attributes: serde_json::Value,
+    pub quantity: i32,
 }
 
 #[derive(serde::Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-struct Stats {
-    attributes: serde_json::Value,
+pub struct Stats {
+    pub attributes: serde_json::Value,
 }
 
 #[derive(serde::Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-struct Profile {
+pub struct Profile {
     #[serde(rename = "_id")]
-    id: String,
-    created: SystemTime,
-    updated: SystemTime,
-    rvn: i32,
-    wipe_number: i32,
-    account_id: String,
-    profile_id: String,
-    version: String,
-    items: HashMap<String, Item>,
-    stats: Stats,
-    command_revision: i32,
+    pub id: String,
+    pub created: SystemTime,
+    pub updated: SystemTime,
+    pub rvn: i32,
+    pub wipe_number: i32,
+    pub account_id: String,
+    pub profile_id: String,
+    pub version: String,
+    pub items: HashMap<String, Item>,
+    pub stats: Stats,
+    pub command_revision: i32,
 }
 
 #[derive(serde::Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-struct ProfileChange {
-    change_type: String,
-    profile: Profile,
+pub struct ProfileChange {
+    pub change_type: String,
+    pub profile: Profile,
 }
 
 #[derive(serde::Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-struct QueryProfile {
-    profile_revision: i32,
-    profile_id: String,
-    profile_changes_base_revision: i32,
-    profile_changes: Vec<ProfileChange>,
-    profile_command_revision: i32,
-    server_time: SystemTime,
+pub struct QueryProfile {
+    pub profile_revision: i32,
+    pub profile_id: String,
+    pub profile_changes_base_revision: i32,
+    pub profile_changes: Vec<ProfileChange>,
+    pub profile_command_revision: i32,
+    pub server_time: SystemTime,
 
     // A multiUpdate array can also exist here which is basically QueryProfile but without ServerTime or ResponseVersion (seen in campaign)
-    response_version: i32,
+    pub response_version: i32,
 }

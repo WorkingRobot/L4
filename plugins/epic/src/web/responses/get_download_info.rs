@@ -21,8 +21,7 @@ impl Manifest {
     pub fn cloud_dir(&self) -> &str {
         Path::new(&self.uri)
             .parent()
-            .map(|p| p.to_str())
-            .flatten()
+            .and_then(|p| p.to_str())
             .unwrap()
     }
 }
@@ -31,16 +30,16 @@ impl Manifest {
 #[serde(rename_all = "camelCase")]
 pub struct Element {
     // Name of the app
-    app_name: String,
+    pub app_name: String,
 
     // Label of the app
-    label_name: String,
+    pub label_name: String,
 
     // Version of the app
-    build_version: String,
+    pub build_version: String,
 
     // SHA1 of manifest file
-    hash: String,
+    pub hash: String,
 
     // Any metadata for the element (optional)
     // Here are some possible keys:
@@ -49,10 +48,10 @@ pub struct Element {
     // androidSigningFingerprintSHA256
     // androidPackageName
     // status
-    metadata: Option<HashMap<String, String>>,
+    pub metadata: Option<HashMap<String, String>>,
 
     // Manifest URLs
-    manifests: Vec<Manifest>,
+    pub manifests: Vec<Manifest>,
 }
 
 impl Element {
@@ -65,7 +64,7 @@ impl Element {
 #[serde(rename_all = "camelCase")]
 pub struct GetDownloadInfo {
     // A list of all assets available to the user
-    elements: Vec<Element>,
+    pub elements: Vec<Element>,
 }
 
 impl GetDownloadInfo {

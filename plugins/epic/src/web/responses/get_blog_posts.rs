@@ -5,27 +5,27 @@ use std::time::SystemTime;
 #[derive(serde::Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct BlogItem {
-    image: String,               // smaller 1:1
-    share_image: Option<String>, // 16:9 wide
-    trending_image: String,      // 19:6 wide af
-    author: String,
-    title: String,
-    date: SystemTime,
-    external_link: Option<String>,
-    slug: String,
+    pub image: String,               // smaller 1:1
+    pub share_image: Option<String>, // 16:9 wide
+    pub trending_image: String,      // 19:6 wide af
+    pub author: String,
+    pub title: String,
+    pub date: SystemTime,
+    pub external_link: Option<String>,
+    pub slug: String,
     #[serde(default, rename = "_metaTags")]
-    meta_tags: String,
+    pub meta_tags: String,
     #[serde(default)]
-    share_description: String,
-    // content: Option<String>,
+    pub share_description: String,
+    // pub content: Option<String>,
 }
 
 #[derive(serde::Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct GetBlogPosts {
-    blog_list: Vec<BlogItem>,
-    blog_total: i32,
-    post_count: i32,
-    increment_count: i32,
-    articles_to_load: i32,
+    pub blog_list: Vec<BlogItem>,
+    pub blog_total: i32,
+    pub post_count: i32,
+    pub increment_count: i32,
+    pub articles_to_load: i32,
 }
