@@ -2,6 +2,7 @@ use std::future::Future;
 
 pub enum Error {
     ReqwestError(reqwest::Error),
+    ResponseShouldBeEmpty,
 }
 
 impl From<reqwest::Error> for Error {

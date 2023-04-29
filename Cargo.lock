@@ -893,6 +893,7 @@ dependencies = [
  "libadwaita",
  "once_cell",
  "plugins_core",
+ "tokio",
  "winres",
 ]
 
@@ -1202,6 +1203,7 @@ dependencies = [
  "serde",
  "serde-enum-str",
  "serde_json",
+ "tokio",
 ]
 
 [[package]]

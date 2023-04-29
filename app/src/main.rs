@@ -9,7 +9,8 @@ use widgets::Application;
 
 static APP_ID: &str = "me.workingrobot.l4";
 
-fn main() -> glib::ExitCode {
+#[tokio::main]
+async fn main() -> glib::ExitCode {
     if true {
         #[cfg(debug_assertions)]
         // Cairo is enabled for faster launch times
