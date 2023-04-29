@@ -1,26 +1,32 @@
-mod get_page_info;
-pub use get_page_info::GetPageInfo;
+macro_rules! add_module {
+    ($mod_name: tt) => {
+        mod $mod_name;
+        pub use $mod_name::*;
+    };
+}
 
-mod get_blog_posts;
-pub use get_blog_posts::GetBlogPosts;
-
-mod get_statuspage_summary;
-pub use get_statuspage_summary::GetStatuspageSummary;
-
-mod oauth_token;
-pub use oauth_token::{OAuthToken, OAuthTokenUser};
-
-mod get_account;
-pub use get_account::GetAccount;
-
-pub struct GetAccountExternalAuths;
-#[derive(serde::Deserialize, Debug)]
-pub struct GetAccounts;
-#[derive(serde::Deserialize, Debug)]
-pub struct Account;
-#[derive(serde::Deserialize, Debug)]
-pub struct GetDeviceAuths;
-#[derive(serde::Deserialize, Debug)]
-pub struct DeviceAuth;
-#[derive(serde::Deserialize, Debug)]
-pub struct GetExchangeCode;
+add_module!(get_account_external_auths);
+add_module!(get_account);
+add_module!(get_accounts);
+add_module!(get_assets);
+add_module!(get_blocked_users);
+add_module!(get_blog_posts);
+add_module!(get_catalog_items);
+add_module!(get_csrf_token);
+add_module!(get_currencies);
+add_module!(get_default_billing_account);
+add_module!(get_device_auths);
+add_module!(get_download_info);
+add_module!(get_entitlements);
+add_module!(get_exchange_code);
+add_module!(get_external_source_settings);
+add_module!(get_friends_requested);
+add_module!(get_friends_suggested);
+add_module!(get_friends_summary);
+add_module!(get_friends);
+add_module!(get_launcher_download_info);
+add_module!(get_lightswitch_status);
+add_module!(get_page_info);
+add_module!(get_statuspage_summary);
+add_module!(oauth_token);
+add_module!(query_profile);

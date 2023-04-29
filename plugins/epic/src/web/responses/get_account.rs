@@ -51,7 +51,7 @@ pub struct GetAccount {
     // Not sure what standard this conforms to, I've only had "US"
     country: String,
 
-    // Preferred language (i've only had "en")
+    // Preferred language (I've only had "en")
     preferred_language: String,
 
     // Phone number

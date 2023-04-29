@@ -13,4 +13,5 @@ plugins_core = { path = "../core" }
 reqwest = { version = "*", features = ["json"] }
 serde = { version = "*", features = ["derive"] }
 serde-enum-str = "*"
-const_format = "*"
+rand = "*"
+serde_json = "*"
