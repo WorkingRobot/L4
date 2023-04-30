@@ -5,12 +5,13 @@ pub use game::Game;
 pub use plugin::Plugin;
 
 macro_rules! item_model {
-    ($name:tt, $inner_name:tt, $glib_name:expr, [$($arg_name:ident: $arg_type:ty)*]) => {
+    ($name:tt, $inner_name:tt, $glib_name:expr, ($($arg_name:ident: $arg_type:ty),* $(,)?), |$inner:ident| {$($param_spec:ident $(::<$param_turbofish:ty>)? ($prop_name:expr) => $prop_getter:expr),* $(,)?}) => {
         mod imp {
             use super::$inner_name as Inner;
             use once_cell::unsync::OnceCell;
             use gtk::glib;
-            use gtk::subclass::prelude::ObjectSubclass;
+            use gtk::subclass::prelude::*;
+            use gtk::glib::{ParamSpec, Value};
             use super::*;
 
             #[derive(Default)]
@@ -22,6 +23,25 @@ macro_rules! item_model {
             impl ObjectSubclass for $name {
                 const NAME: &'static str = $glib_name;
                 type Type = super::$name;
+            }
+
+            impl ObjectImpl for $name {
+                fn properties() -> &'static [ParamSpec] {
+                    static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
+                        vec![
+                            $($param_spec::builder$(::<$param_turbofish>)?($prop_name).read_only().build(),)*
+                        ]
+                    });
+                    PROPERTIES.as_ref()
+                }
+
+                fn property(&self, _id: usize, pspec: &ParamSpec) -> Value {
+                    let $inner = self.inner.get().unwrap();
+                    match pspec.name() {
+                        $($prop_name => $prop_getter.to_value(),)*
+                        _ => unimplemented!(),
+                    }
+                }
             }
 
             impl $name {

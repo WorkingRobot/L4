@@ -1,8 +1,7 @@
 use super::item_model;
 use gtk::{
     gdk::{Paintable, Texture},
-    glib::{ParamSpec, ParamSpecObject, ParamSpecString, Value},
-    subclass::prelude::*,
+    glib::{ParamSpecObject, ParamSpecString},
 };
 use once_cell::sync::Lazy;
 use plugins_core::prelude::*;
@@ -12,7 +11,14 @@ item_model!(
     Plugin,
     PluginInner,
     "L4ModelPlugin",
-    [game: Arc<dyn core::Plugin>]
+    (game: Arc<dyn core::Plugin>),
+    |inner| {
+        ParamSpecString("id") => inner.id(),
+        ParamSpecString("name") => inner.name(),
+        ParamSpecString("description") => inner.description(),
+        ParamSpecString("version") => inner.version().unwrap().to_string(),
+        ParamSpecObject::<Paintable>("icon-paintable") => inner.icon_paintable()
+    }
 );
 
 struct PluginInner {
@@ -47,34 +53,5 @@ impl PluginInner {
 
     fn icon_paintable(&self) -> &Paintable {
         &self.icon_paintable
-    }
-}
-
-impl ObjectImpl for imp::Plugin {
-    fn properties() -> &'static [ParamSpec] {
-        static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
-            vec![
-                ParamSpecString::builder("id").read_only().build(),
-                ParamSpecString::builder("name").read_only().build(),
-                ParamSpecString::builder("description").read_only().build(),
-                ParamSpecString::builder("version").read_only().build(),
-                ParamSpecObject::builder::<Paintable>("icon-paintable")
-                    .read_only()
-                    .build(),
-            ]
-        });
-        PROPERTIES.as_ref()
-    }
-
-    fn property(&self, _id: usize, pspec: &ParamSpec) -> Value {
-        let inner = self.inner.get().unwrap();
-        match pspec.name() {
-            "id" => inner.id().to_value(),
-            "name" => inner.name().to_value(),
-            "description" => inner.description().to_value(),
-            "version" => inner.version().unwrap().to_string().to_value(),
-            "icon-paintable" => inner.icon_paintable().to_value(),
-            _ => None::<&str>.to_value(),
-        }
     }
 }
