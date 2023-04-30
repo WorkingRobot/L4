@@ -8,6 +8,7 @@
     <file compressed="true" preprocess="xml-stripblanks">templates/page_settings.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">templates/models/game.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">templates/models/plugin.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">templates/models/setting.ui</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="icon.svg">graphics/icon.svg</file>
     <file compressed="true" alias="style.css">main.css</file>
   </gresource>

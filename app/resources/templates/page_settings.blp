@@ -1,10 +1,14 @@
 using Gtk 4.0;
+using Gio 2.0;
 
 template L4PageSettings: Box {
   [start]
-  DropDown settings-dropdown {
-    model: StringList {
-      strings ["Sweet", "Dark", "Mars", "Ambar", "Blue"]
+  ListView view {
+    factory: BuilderListItemFactory {
+      // Holding off on using template {} syntax until
+      // https://gitlab.gnome.org/jwestman/blueprint-compiler/-/issues/110 is fixed
+      resource: "/me/workingrobot/l4/templates/models/setting.ui";
     };
+    model: SingleSelection selection {};
   }
 }

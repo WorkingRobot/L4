@@ -1,0 +1,11 @@
+using Gtk 4.0;
+using GLib 2.0;
+
+template GtkListItem {
+  child: TreeExpander expander {
+    list-row: bind GtkListItem.item as <TreeListRow>;
+    child: Label {
+        label: bind expander.item as <$L4ModelSetting>.name;
+    };
+  };
+}
