@@ -16,7 +16,7 @@ item_model!(
         ParamSpecString("id") => inner.id(),
         ParamSpecString("name") => inner.name(),
         ParamSpecString("description") => inner.description(),
-        ParamSpecString("version") => inner.version().unwrap().to_string(),
+        ParamSpecString("version") => inner.version().map(|v| v.to_string()),
         ParamSpecObject::<Paintable>("icon-paintable") => inner.icon_paintable()
     }
 );
