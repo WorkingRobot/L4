@@ -1,10 +1,10 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-mod modules;
 mod widgets;
 
+use deps::utils::UsesDpi;
 use gtk::prelude::*;
-use gtk::{gio, glib};
-use widgets::Application;
+use gtk::{gdk, gio, glib, IconTheme};
+use widgets::AppWindow;
 
 static APP_ID: &str = "me.workingrobot.l4";
 
@@ -29,7 +29,29 @@ async fn main() -> glib::ExitCode {
     adw::init().expect("Failed to initialize LibAdwaita");
 
     glib::set_application_name("L4");
-    glib::set_program_name(Some("L4"));
 
-    Application::from_application_id(APP_ID).run()
+    let app = adw::Application::builder().application_id(APP_ID).build();
+    app.connect_activate(|app| {
+        let display = gdk::Display::default().expect("Could not get a display");
+        let icon_theme = IconTheme::for_display(&display);
+        icon_theme.add_resource_path("/me/workingrobot/l4");
+        icon_theme.add_resource_path("/com/fontawesome/icons");
+
+        let window = AppWindow::new(app.upcast_ref::<gtk::Application>());
+
+        let manager = adw::StyleManager::default();
+        manager.set_color_scheme(adw::ColorScheme::PreferDark);
+
+        let settings = gtk::Settings::default().expect("Could not get default settings");
+        settings.set_gtk_theme_name(Some("Sweet-Ambar-Blue"));
+
+        window.connect_realize(move |win| {
+            settings.set_gtk_xft_dpi(win.get_dpi().unwrap_or(96) as i32 * 1024);
+        });
+
+        window.minimize();
+        window.present();
+    });
+
+    app.run()
 }

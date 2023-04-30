@@ -9,7 +9,7 @@ template GtkListItem {
       orientation: vertical;
 
       Image {
-        paintable: bind GtkListItem.item as <$L4PluginModel>.icon-paintable;
+        paintable: bind GtkListItem.item as <$L4ModelPlugin>.icon-paintable;
         pixel-size: 64;
       }
     }
@@ -18,10 +18,10 @@ template GtkListItem {
       orientation: vertical;
 
       Label {
-        label: bind GtkListItem.item as <$L4PluginModel>.name;
+        label: bind GtkListItem.item as <$L4ModelPlugin>.name;
       }
       Label {
-        label: bind GtkListItem.item as <$L4PluginModel>.version;
+        label: bind GtkListItem.item as <$L4ModelPlugin>.version;
       }
     }
   };

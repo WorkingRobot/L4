@@ -1,0 +1,72 @@
+using Gtk 4.0;
+using Gio 2.0;
+
+template L4AppWindow: ApplicationWindow {
+  icon-name: "icon";
+
+  default-width: 600;
+  default-height: 500;
+
+  titlebar: HeaderBar {
+    decoration-layout: "icon:minimize,maximize,close";
+
+    [start]
+    Button button-back {
+      icon-name: "fa-chevron-left-solid-symbolic";
+      visible: false;
+      clicked => $on_back_clicked() swapped;
+    }
+
+    [end]
+    Button button-settings {
+      icon-name: "fa-gear-solid-symbolic";
+      clicked => $on_open_settings() swapped;
+    }
+
+    [end]
+    Button button-about {
+      icon-name: "fa-circle-info-solid-symbolic";
+      clicked => $on_open_about() swapped;
+    }
+
+    [end]
+    Button button-games {
+      icon-name: "fa-play-solid-symbolic";
+      clicked => $on_open_games() swapped;
+    }
+
+    [end]
+    Button button-inspector {
+      icon-name: "fa-bug-solid-symbolic";
+      clicked => $on_open_inspector() swapped;
+    }
+  };
+
+  Box {
+    orientation: vertical;
+    Stack stack {
+      transition-type: slide_left_right;
+      notify::visible-child-name => $on_stack_switch() swapped;
+
+      StackPage page-plugins {
+        name: "plugins";
+        child: $L4PagePlugins {};
+      }
+
+      StackPage page-games {
+        name: "games";
+        child: $L4PageGames {};
+      }
+
+      StackPage page-settings {
+        name: "settings";
+        child: $L4PageSettings {};
+      }
+
+      StackPage page-about {
+        name: "about";
+        child: $L4PageAbout {};
+      }
+    }
+  }
+}

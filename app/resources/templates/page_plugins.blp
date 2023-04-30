@@ -1,0 +1,27 @@
+using Gtk 4.0;
+using Gio 2.0;
+
+template L4PagePlugins: Box {
+  [start]
+  ListView view {
+    factory: BuilderListItemFactory {
+      // Holding off on using template {} syntax until
+      // https://gitlab.gnome.org/jwestman/blueprint-compiler/-/issues/110 is fixed
+      resource: "/me/workingrobot/l4/templates/models/plugin.ui";
+    };
+    model: SingleSelection selection {
+      model: Gio.ListStore store {
+        item-type: typeof<$L4ModelPlugin>;
+      };
+    };
+  }
+
+  Box info {
+    orientation: vertical;
+    Box {
+      Label  {
+        label: bind selection.selected-item as <$L4ModelPlugin>.description;
+      }
+    }
+  }
+}

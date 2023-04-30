@@ -1,7 +1,7 @@
 use super::Client;
 use libloading::Library;
 use plugins_core::{Plugin, PluginDeclaration};
-use std::sync::{Arc, Weak};
+use std::sync::Arc;
 use std::{io, path::Path};
 
 pub struct PluginRegistry {
@@ -32,8 +32,8 @@ impl PluginRegistry {
         Ok(())
     }
 
-    pub fn iter_plugins(&self) -> impl Iterator<Item = Weak<dyn Plugin>> + '_ {
-        self.plugins.iter().map(|p| Arc::downgrade(&p.plugin))
+    pub fn iter_plugins(&self) -> impl Iterator<Item = Arc<dyn Plugin + 'static>> + '_ {
+        self.plugins.iter().map(|p| p.plugin.clone())
     }
 }
 

@@ -1,0 +1,10 @@
+using Gtk 4.0;
+
+template L4PageSettings: Box {
+  [start]
+  DropDown settings-dropdown {
+    model: StringList {
+      strings ["Sweet", "Dark", "Mars", "Ambar", "Blue"]
+    };
+  }
+}

@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/me/workingrobot/l4/">
-    <file compressed="true" preprocess="xml-stripblanks">main.ui</file>
-    <file compressed="true" preprocess="xml-stripblanks">templates/game.ui</file>
-    <file compressed="true" preprocess="xml-stripblanks">templates/plugin.ui</file>
-    <file compressed="true" preprocess="xml-stripblanks">icon.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks">templates/app_window.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">templates/header_bar.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">templates/page_about.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">templates/page_games.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">templates/page_plugins.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">templates/page_settings.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">templates/models/game.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">templates/models/plugin.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="icon.svg">graphics/icon.svg</file>
     <file compressed="true" alias="style.css">main.css</file>
   </gresource>
 </gresources>
