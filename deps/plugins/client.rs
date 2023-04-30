@@ -1,10 +1,11 @@
-use plugins_core::{Client as ClientTrait, Identity, Version};
+use gtk::gdk_pixbuf::Pixbuf;
+use plugins_core::prelude::*;
 
 pub struct Client;
 
-impl ClientTrait for Client {}
+impl core::Client for Client {}
 
-impl Identity for Client {
+impl core::Identity for Client {
     fn id(&self) -> &str {
         env!("CARGO_PKG_NAME")
     }
@@ -31,5 +32,9 @@ impl Identity for Client {
 
     fn license(&self) -> &str {
         env!("CARGO_PKG_LICENSE")
+    }
+
+    fn image(&self, _image_type: ImageType) -> Option<Pixbuf> {
+        None
     }
 }

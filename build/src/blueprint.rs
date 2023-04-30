@@ -3,6 +3,10 @@ use std::{env, path::Path};
 use walkdir::WalkDir;
 
 fn batch_compile<P: AsRef<Path>>(sources: &[P], input_dir: &str, output_dir: &str) {
+    if sources.is_empty() {
+        return;
+    }
+
     let mut command = Command::new("blueprint-compiler");
 
     command.arg("batch-compile").arg(output_dir).arg(input_dir);

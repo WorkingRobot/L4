@@ -1,5 +1,4 @@
-use crate::modules::{ModuleCtx, ModuleList};
-
+use crate::modules::ModuleList;
 use adw::subclass::prelude::*;
 use gtk::{glib, traits::GtkWindowExt};
 use once_cell::unsync::OnceCell;
@@ -31,7 +30,7 @@ impl ApplicationImpl for Application {
             .modules
             .get_or_init(|| ModuleList::new(self.obj().as_ref()));
 
-        let window = modules.get_object::<gtk::ApplicationWindow>("window");
+        let window = modules.application_window();
         window.minimize();
         window.present();
     }

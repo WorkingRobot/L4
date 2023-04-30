@@ -1,26 +1,46 @@
 use crate::web::ClientAuthed;
 
 use super::User;
-use plugins_core::{async_trait, App, AuthSession, Client, Version};
+use fragile::Fragile;
+use gtk::gdk_pixbuf::Pixbuf;
+use plugins_core::prelude::*;
 use std::sync::Arc;
 
 pub struct Plugin {
-    client: Arc<dyn Client>,
+    client: Arc<dyn core::Client>,
     user: Option<User>,
     web_client: Option<ClientAuthed>,
+    image_icon: Fragile<Pixbuf>,
+    image_banner: Fragile<Pixbuf>,
 }
 
 impl Plugin {
-    pub fn new(client: Arc<dyn Client>) -> Self {
+    pub fn new(client: Arc<dyn core::Client>) -> Self {
         Self {
             client,
             user: None,
             web_client: None,
+            image_icon: Pixbuf::from_resource_at_scale(
+                "/me/workingrobot/l4/epic/icon.svg",
+                256,
+                256,
+                true,
+            )
+            .unwrap()
+            .into(),
+            image_banner: Pixbuf::from_resource_at_scale(
+                "/me/workingrobot/l4/epic/banner.png",
+                1920,
+                1080,
+                true,
+            )
+            .unwrap()
+            .into(),
         }
     }
 }
 
-impl plugins_core::Identity for Plugin {
+impl core::Identity for Plugin {
     fn id(&self) -> &str {
         "epic"
     }
@@ -48,15 +68,23 @@ impl plugins_core::Identity for Plugin {
     fn license(&self) -> &str {
         env!("CARGO_PKG_LICENSE")
     }
+
+    fn image(&self, image_type: ImageType) -> Option<Pixbuf> {
+        match image_type {
+            ImageType::Icon => Some(self.image_icon.get().clone()),
+            ImageType::Banner => Some(self.image_banner.get().clone()),
+            _ => None,
+        }
+    }
 }
 
 #[async_trait]
-impl plugins_core::Plugin for Plugin {
-    fn client(&self) -> &dyn Client {
+impl core::Plugin for Plugin {
+    fn client(&self) -> &dyn core::Client {
         self.client.as_ref()
     }
 
-    async fn get_available_apps(&self) -> Option<Vec<Box<dyn App>>> {
+    async fn get_available_apps(&self) -> Option<Vec<Box<dyn core::App>>> {
         if self.get_user().await.is_some() {
             Some(vec![])
         } else {
@@ -64,11 +92,11 @@ impl plugins_core::Plugin for Plugin {
         }
     }
 
-    async fn get_user(&self) -> Option<Box<dyn plugins_core::User>> {
+    async fn get_user(&self) -> Option<Box<dyn core::User>> {
         unimplemented!()
     }
 
-    async fn open_auth_session(&self) -> Option<AuthSession> {
+    async fn open_auth_session(&self) -> Option<core::AuthSession> {
         unimplemented!()
     }
 }

@@ -21,4 +21,4 @@ tokio = "*"
 [build-dependencies]
 embed-manifest = "*"
 winres = "*"
-build-scripts = { path = "build" }
+build-scripts = { path = "../build" }

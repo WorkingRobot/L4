@@ -1,13 +1,13 @@
 use std::path::PathBuf;
 
-use plugins_core::{InstalledApp as InstalledAppTrait, Version};
+use plugins_core::prelude::*;
 
 pub struct InstalledApp {
     archive_path: PathBuf,
     //archive_metadata: Archive::Metadata,
 }
 
-impl InstalledAppTrait for InstalledApp {
+impl core::InstalledApp for InstalledApp {
     fn id(&self) -> &str {
         ""
     }

@@ -1,4 +1,4 @@
-use super::module::*;
+use super::prelude::*;
 use crate::widgets::PluginModel;
 use deps::plugins::PluginRegistry;
 

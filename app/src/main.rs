@@ -2,7 +2,6 @@
 mod modules;
 mod widgets;
 
-use deps::archive::{ArchiveMut, ArchiveMutTrait, StreamMutTrait};
 use gtk::prelude::*;
 use gtk::{gio, glib};
 use widgets::Application;
@@ -31,12 +30,6 @@ async fn main() -> glib::ExitCode {
 
     glib::set_application_name("L4");
     glib::set_program_name(Some("L4"));
-
-    let mut archive = ArchiveMut::new("yo.ar").unwrap();
-    let mut stream = archive.stream_mut(4).unwrap();
-    let mut iter = stream.iter_bytes_mut(63..4030).unwrap();
-
-    while let Some(_slice) = iter.next() {}
 
     Application::from_application_id(APP_ID).run()
 }

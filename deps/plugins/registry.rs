@@ -63,6 +63,12 @@ impl PluginHandle {
             )));
         }
 
+        if !decl.gresource.is_empty() {
+            let bytes = gtk::glib::Bytes::from_static(decl.gresource);
+            let resource = gtk::gio::Resource::from_data(&bytes)?;
+            gtk::gio::resources_register(&resource);
+        }
+
         let plugin = (decl.register)(client);
 
         Ok(Self {

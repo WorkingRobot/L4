@@ -16,3 +16,7 @@ serde-enum-str = "*"
 rand = "*"
 serde_json = "*"
 tokio = "*"
+fragile = "*"
+
+[build-dependencies]
+build-scripts = { path = "../../build" }

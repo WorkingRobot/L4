@@ -298,6 +298,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "fragile"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6c2141d6d6c8512188a7891b4b01590a45f6dac67afb4f255c4124dbb86d4eaa"
+
+[[package]]
 name = "fs2"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1183,10 +1189,11 @@ checksum = "6ac9a59f73473f1b8d852421e59e64809f025994837ef743615c6d0c5b305160"
 
 [[package]]
 name = "plugins_core"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "async-trait",
  "generator",
+ "gtk4",
  "rustc_version",
  "semver",
  "tokio",
@@ -1197,6 +1204,8 @@ dependencies = [
 name = "plugins_epic"
 version = "0.1.0"
 dependencies = [
+ "build-scripts",
+ "fragile",
  "plugins_core",
  "rand",
  "reqwest",

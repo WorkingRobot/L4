@@ -1,4 +1,5 @@
-use super::*;
+use super::{LoadPhase, Metadata, Module, ModuleList};
+use crate::modules;
 use once_cell::unsync::Lazy;
 use std::cell::RefCell;
 use std::collections::BTreeMap;
@@ -19,10 +20,10 @@ impl ModuleRegistry {
 
     fn create() -> BTreeMap<Metadata, Initializer> {
         let mut reg = BTreeMap::new();
-        Self::register::<UIPreInit>(&mut reg);
-        Self::register::<UIPostInit>(&mut reg);
-        Self::register::<TitleButtons>(&mut reg);
-        Self::register::<Plugins>(&mut reg);
+        Self::register::<modules::UIPreInit>(&mut reg);
+        Self::register::<modules::UIPostInit>(&mut reg);
+        Self::register::<modules::TitleButtons>(&mut reg);
+        Self::register::<modules::Plugins>(&mut reg);
         reg
     }
 

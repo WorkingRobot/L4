@@ -9,6 +9,6 @@ mod plugin;
 mod user;
 mod web;
 
-plugins_core::export_plugin!(plugin::Plugin);
+plugins_core::export_plugin!(plugin::Plugin, "epic.gresource");
 
 pub use user::*;

@@ -51,6 +51,10 @@ impl ModuleList {
         this
     }
 
+    pub fn application_window(&self) -> gtk::ApplicationWindow {
+        self.get_object::<gtk::ApplicationWindow>("window")
+    }
+
     fn load(&mut self, phase: LoadPhase) {
         for initializer in self.registry.iter_phase(phase) {
             self.modules.push(initializer(self));

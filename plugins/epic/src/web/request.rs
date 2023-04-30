@@ -1,4 +1,4 @@
-use plugins_core::async_trait;
+use plugins_core::prelude::async_trait;
 use reqwest::RequestBuilder;
 use serde::de::DeserializeOwned;
 

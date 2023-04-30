@@ -1,4 +1,4 @@
-use super::module::*;
+use super::prelude::*;
 use gtk::prelude::*;
 use gtk::{gdk, IconTheme};
 

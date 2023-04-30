@@ -5,19 +5,24 @@ template GtkListItem {
   activatable: true;
   selectable: true;
   child: Box {
-    orientation: vertical;
-    
-    Label {
-      label: bind GtkListItem.item as <$L4PluginModel>.name;
+    Box {
+      orientation: vertical;
+
+      Image {
+        paintable: bind GtkListItem.item as <$L4PluginModel>.icon-paintable;
+        pixel-size: 64;
+      }
     }
-    Label {
-      label: bind GtkListItem.item as <$L4PluginModel>.id;
-    }
-    Label {
-      label: bind GtkListItem.item as <$L4PluginModel>.version;
-    }
-    Label {
-      label: bind GtkListItem.item as <$L4PluginModel>.description;
+
+    Box {
+      orientation: vertical;
+
+      Label {
+        label: bind GtkListItem.item as <$L4PluginModel>.name;
+      }
+      Label {
+        label: bind GtkListItem.item as <$L4PluginModel>.version;
+      }
     }
   };
 }

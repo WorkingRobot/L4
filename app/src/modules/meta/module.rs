@@ -1,7 +1,6 @@
-use std::{cell::RefCell, rc::Rc};
-
 use gtk::glib;
 use gtk::prelude::*;
+use std::{cell::RefCell, rc::Rc};
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub enum LoadPhase {

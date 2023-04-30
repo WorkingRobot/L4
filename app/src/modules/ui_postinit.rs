@@ -1,4 +1,4 @@
-use super::module::*;
+use super::prelude::*;
 use deps::utils::{signal, SignalHolder, UsesDpi};
 use gtk::prelude::*;
 
