@@ -48,24 +48,24 @@ template L4AppWindow: ApplicationWindow {
       transition-type: slide_left_right;
       notify::visible-child-name => $on_stack_switch() swapped;
 
-      StackPage page-plugins {
+      StackPage {
         name: "plugins";
-        child: $L4PagePlugins {};
+        child: $L4PagePlugins page-plugins {};
       }
 
-      StackPage page-games {
+      StackPage {
         name: "games";
-        child: $L4PageGames {};
+        child: $L4PageGames page-games {};
       }
 
-      StackPage page-settings {
+      StackPage {
         name: "settings";
-        child: $L4PageSettings {};
+        child: $L4PageSettings page-settings {};
       }
 
-      StackPage page-about {
+      StackPage {
         name: "about";
-        child: $L4PageAbout {};
+        child: $L4PageAbout page-about {};
       }
     }
   }

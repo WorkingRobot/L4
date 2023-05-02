@@ -1,8 +1,8 @@
 use super::composite_widget;
 use super::models;
-use deps::plugins::PluginRegistry;
-use gtk::{gio::ListStore, glib, subclass::prelude::*, CompositeTemplate, TemplateChild};
-use std::cell::RefCell;
+use gtk::{
+    gio::ListStore, glib, subclass::prelude::*, CompositeTemplate, SingleSelection, TemplateChild,
+};
 
 composite_widget!(PagePlugins => "L4PagePlugins",
     @inner PagePluginsInner,
@@ -16,35 +16,17 @@ composite_widget!(PagePlugins => "L4PagePlugins",
 #[template(resource = "/me/workingrobot/l4/templates/page_plugins.ui")]
 pub struct PagePluginsInner {
     #[template_child]
-    store: TemplateChild<ListStore>,
-    registry: RefCell<PluginRegistry>,
+    pub(self) selection: TemplateChild<SingleSelection>,
 }
 
-#[gtk::template_callbacks]
-impl PagePluginsInner {
-    pub fn init(&self) {
-        self.load_plugins();
-
-        for plugin in self.registry.borrow().iter_plugins() {
-            self.store.append(&models::Plugin::new(plugin));
-        }
-    }
-
-    fn load_plugins(&self) {
-        let mut registry_mut = self.registry.borrow_mut();
-        std::fs::read_dir(std::env::current_exe().unwrap().parent().unwrap())
-            .unwrap()
-            .flatten()
-            .filter(|e| e.metadata().map_or(false, |m| m.is_file()))
-            .filter(|e| {
-                e.file_name()
-                    .to_str()
-                    .map_or(false, |f| f.starts_with("plugins_") && f.ends_with(".dll"))
-            })
-            .for_each(|e| unsafe { registry_mut.load(e.path()) }.unwrap())
-    }
-}
+impl ObjectImpl for PagePluginsInner {}
 
 impl WidgetImpl for PagePluginsInner {}
 
 impl BoxImpl for PagePluginsInner {}
+
+impl PagePlugins {
+    pub fn set_model(&self, model: &ListStore) {
+        self.imp().selection.set_model(Some(model));
+    }
+}

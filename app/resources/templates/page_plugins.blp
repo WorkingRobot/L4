@@ -9,11 +9,7 @@ template L4PagePlugins: Box {
       // https://gitlab.gnome.org/jwestman/blueprint-compiler/-/issues/110 is fixed
       resource: "/me/workingrobot/l4/templates/models/plugin.ui";
     };
-    model: SingleSelection selection {
-      model: Gio.ListStore store {
-        item-type: typeof<$L4ModelPlugin>;
-      };
-    };
+    model: SingleSelection selection {};
   }
 
   Box info {

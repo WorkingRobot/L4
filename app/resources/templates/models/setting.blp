@@ -4,8 +4,27 @@ using GLib 2.0;
 template GtkListItem {
   child: TreeExpander expander {
     list-row: bind GtkListItem.item as <TreeListRow>;
-    child: Label {
-        label: bind expander.item as <$L4ModelSetting>.name;
+    child: Box {
+      Overlay {
+        [overlay]
+        Image {
+          icon-name: bind expander.item as <$L4ModelSetting>.icon-name;
+          pixel-size: 32;
+        }
+        Image {
+          paintable: bind expander.item as <$L4ModelPlugin>.icon-paintable;
+          pixel-size: 32;
+        }
+      }
+      Overlay {
+        [overlay]
+        Label {
+          label: bind expander.item as <$L4ModelSetting>.name;
+        }
+        Label {
+          label: bind expander.item as <$L4ModelPlugin>.name;
+        }
+      }
     };
   };
 }

@@ -1,8 +1,10 @@
 mod game;
 mod plugin;
+mod setting;
 
 pub use game::Game;
 pub use plugin::Plugin;
+pub use setting::Setting;
 
 macro_rules! item_model {
     ($name:tt, $inner_name:tt, $glib_name:expr, ($($arg_name:ident: $arg_type:ty),* $(,)?), |$inner:ident| {$($param_spec:ident $(::<$param_turbofish:ty>)? ($prop_name:expr) => $prop_getter:expr),* $(,)?}) => {
@@ -45,8 +47,8 @@ macro_rules! item_model {
             }
 
             impl $name {
-                pub(super) fn init(&self, $($arg_name: $arg_type)*) {
-                    _ = self.inner.set(Inner::new($($arg_name)*));
+                pub(super) fn init(&self, $($arg_name: $arg_type),*) {
+                    _ = self.inner.set(Inner::new($($arg_name),*));
                 }
             }
         }
@@ -56,11 +58,11 @@ macro_rules! item_model {
         }
 
         impl $name {
-            pub fn new($($arg_name: $arg_type)*) -> Self {
+            pub fn new($($arg_name: $arg_type),*) -> Self {
                 use gtk::subclass::prelude::ObjectSubclassExt;
 
                 let this = gtk::glib::Object::builder().build();
-                imp::$name::from_obj(&this).init($($arg_name)*);
+                imp::$name::from_obj(&this).init($($arg_name),*);
                 this
             }
         }

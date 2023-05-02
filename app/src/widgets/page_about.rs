@@ -12,10 +12,7 @@ composite_widget!(PageAbout => "L4PageAbout",
 #[template(resource = "/me/workingrobot/l4/templates/page_about.ui")]
 pub struct PageAboutInner {}
 
-#[gtk::template_callbacks]
-impl PageAboutInner {
-    fn init(&self) {}
-}
+impl ObjectImpl for PageAboutInner {}
 
 impl WidgetImpl for PageAboutInner {}
 
