@@ -12,7 +12,7 @@ CompanyName = "WorkingRobot"
 
 [dependencies]
 deps = { path = "../deps" }
-adw = { package = "libadwaita", version = "0.3.1"}
+adw = { package = "libadwaita", version = "0.4.1", features = ["v1_2"] }
 gtk = { package = "gtk4", version = "0.6.6", features = ["v4_10"] }
 plugins_core = { path = "../plugins/core" }
 once_cell = "*"

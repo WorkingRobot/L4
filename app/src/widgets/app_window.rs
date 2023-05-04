@@ -1,23 +1,23 @@
-use super::{composite_widget, models, PageAbout, PageGames, PagePlugins, PageSettings};
+use super::{composite_widget, models, PageGames, PagePlugins, SettingsWindow};
+use adw::subclass::prelude::*;
 use deps::plugins::PluginRegistry;
 use gtk::{
     gio::{self, ListStore},
     glib,
     prelude::StaticType,
-    subclass::prelude::*,
-    traits::WidgetExt,
-    Button, CompositeTemplate, Stack,
+    traits::GtkWindowExt,
+    CompositeTemplate,
 };
 use once_cell::unsync::OnceCell;
 use std::cell::RefCell;
 
 composite_widget!(AppWindow => "L4AppWindow",
     @inner AppWindowInner!,
-    @parent gtk::ApplicationWindow,
-    @extends gtk::ApplicationWindow, gtk::Window, gtk::Widget,
+    @parent adw::ApplicationWindow,
+    @extends adw::ApplicationWindow, gtk::ApplicationWindow, gtk::Window, gtk::Widget,
     @implements gio::ActionGroup, gio::ActionMap, gtk::Accessible, gtk::Buildable,
                 gtk::ConstraintTarget, gtk::Native, gtk::Root, gtk::ShortcutManager,
-    @uses PagePlugins, PageGames, PageSettings, PageAbout
+    @uses PagePlugins, PageGames, SettingsWindow
 );
 
 pub struct AppWindowData {
@@ -67,17 +67,10 @@ impl Drop for AppWindowData {
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/me/workingrobot/l4/templates/app_window.ui")]
 pub struct AppWindowInner {
-    #[template_child]
-    stack: TemplateChild<Stack>,
-    #[template_child(id = "button-back")]
-    button_back: TemplateChild<Button>,
-
     #[template_child(id = "page-plugins")]
     page_plugins: TemplateChild<PagePlugins>,
     #[template_child(id = "page-games")]
     page_games: TemplateChild<PageGames>,
-    #[template_child(id = "page-settings")]
-    page_settings: TemplateChild<PageSettings>,
 
     data: RefCell<OnceCell<AppWindowData>>,
 }
@@ -85,34 +78,18 @@ pub struct AppWindowInner {
 #[gtk::template_callbacks]
 impl AppWindowInner {
     #[template_callback]
-    fn on_back_clicked(&self) {
-        self.stack.set_visible_child_name("plugins");
-    }
-
-    #[template_callback]
-    fn on_open_settings(&self) {
-        self.stack.set_visible_child_name("settings");
-    }
-
-    #[template_callback]
-    fn on_open_about(&self) {
-        self.stack.set_visible_child_name("about");
-    }
-
-    #[template_callback]
     fn on_open_inspector(&self) {
         gtk::Window::set_interactive_debugging(true);
     }
 
     #[template_callback]
-    fn on_open_games(&self) {
-        self.stack.set_visible_child_name("games");
+    fn is_debug_mode(&self) -> bool {
+        cfg!(debug_assertions)
     }
 
     #[template_callback]
-    fn on_stack_switch(&self) {
-        self.button_back
-            .set_visible(self.stack.visible_child_name().unwrap_or_default() != "plugins");
+    fn on_open_settings(&self) {
+        SettingsWindow::new(&self.data.borrow().get().unwrap().plugin_store).present();
     }
 }
 
@@ -127,7 +104,6 @@ impl ObjectImpl for AppWindowInner {
         data.load_plugins();
         self.page_games.set_model(&data.game_store);
         self.page_plugins.set_model(&data.plugin_store);
-        self.page_settings.init_model(data.plugin_store.clone());
     }
 }
 
@@ -136,6 +112,8 @@ impl WidgetImpl for AppWindowInner {}
 impl WindowImpl for AppWindowInner {}
 
 impl ApplicationWindowImpl for AppWindowInner {}
+
+impl AdwApplicationWindowImpl for AppWindowInner {}
 
 impl AppWindow {
     pub fn new(app: &gtk::Application) -> Self {

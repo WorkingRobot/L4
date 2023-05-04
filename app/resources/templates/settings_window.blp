@@ -1,0 +1,44 @@
+using Gtk 4.0;
+using Gio 2.0;
+using Adw 1;
+
+template L4SettingsWindow: Adw.PreferencesWindow {
+  title: _("Settings");
+  modal: true;
+  default-width: 750;
+
+  Adw.PreferencesPage {
+    icon-name: "fa-gear-solid-symbolic";
+    title: _("General");
+
+    Adw.PreferencesGroup {
+      title: _("Appearance");
+
+      Adw.ComboRow theme-combo {
+        title: _("Theme");
+        subtitle: _("Configure how L4 looks.");
+
+        model: StringList theme-list {
+        };
+      }
+
+      Adw.ActionRow about-button {
+        title: _("About");
+        subtitle: _("About L4");
+        activatable: true;
+
+        activated => $on_open_about() swapped;
+
+        [suffix]
+        Image {
+          icon-name: "adw-external-link-symbolic";
+        }
+      }
+    }
+  }
+
+  Adw.PreferencesPage plugins-page {
+    icon-name: "fa-puzzle-piece-solid-symbolic";
+    title: _("Plugins");
+  }
+}

@@ -1,10 +1,8 @@
 mod game;
 mod plugin;
-mod setting;
 
 pub use game::Game;
 pub use plugin::Plugin;
-pub use setting::Setting;
 
 macro_rules! item_model {
     ($name:tt, $inner_name:tt, $glib_name:expr, ($($arg_name:ident: $arg_type:ty),* $(,)?), |$inner:ident| {$($param_spec:ident $(::<$param_turbofish:ty>)? ($prop_name:expr) => $prop_getter:expr),* $(,)?}) => {

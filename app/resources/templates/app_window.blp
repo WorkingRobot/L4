@@ -1,72 +1,62 @@
 using Gtk 4.0;
 using Gio 2.0;
+using Adw 1;
+using Glib 2.0;
 
-template L4AppWindow: ApplicationWindow {
+template L4AppWindow: Adw.ApplicationWindow {
   icon-name: "icon";
 
-  default-width: 600;
-  default-height: 500;
-
-  titlebar: HeaderBar {
-    decoration-layout: "icon:minimize,maximize,close";
-
-    [start]
-    Button button-back {
-      icon-name: "fa-chevron-left-solid-symbolic";
-      visible: false;
-      clicked => $on_back_clicked() swapped;
-    }
-
-    [end]
-    Button button-settings {
-      icon-name: "fa-gear-solid-symbolic";
-      clicked => $on_open_settings() swapped;
-    }
-
-    [end]
-    Button button-about {
-      icon-name: "fa-circle-info-solid-symbolic";
-      clicked => $on_open_about() swapped;
-    }
-
-    [end]
-    Button button-games {
-      icon-name: "fa-play-solid-symbolic";
-      clicked => $on_open_games() swapped;
-    }
-
-    [end]
-    Button button-inspector {
-      icon-name: "fa-bug-solid-symbolic";
-      clicked => $on_open_inspector() swapped;
-    }
-  };
+  default-width: 750;
+  default-height: 600;
 
   Box {
     orientation: vertical;
-    Stack stack {
-      transition-type: slide_left_right;
-      notify::visible-child-name => $on_stack_switch() swapped;
+    
+    Adw.HeaderBar {
+      centering-policy: strict;
+      title-widget: Adw.ViewSwitcherTitle title {
+        title: "L4";
+        stack: stack;
+      };
 
-      StackPage {
+      [end] 
+      Button {
+        icon-name: "fa-gear-solid-symbolic";
+        valign: center;
+        tooltip-text: _("Settings");
+        clicked => $on_open_settings() swapped;
+      }
+
+      [end]
+      Button {
+        icon-name: "fa-bug-solid-symbolic";
+        valign: center;
+        tooltip-text: _("Inspector");
+        visible: bind $is_debug_mode() as <bool>;
+
+        clicked => $on_open_inspector() swapped;
+      }
+    }
+    Adw.ViewStack stack {
+      vexpand: true;
+
+      Adw.ViewStackPage {
         name: "plugins";
+        title: "Plugins";
+        icon-name: "fa-puzzle-piece-solid-symbolic";
         child: $L4PagePlugins page-plugins {};
       }
 
-      StackPage {
+      Adw.ViewStackPage {
         name: "games";
+        title: "Games";
+        icon-name: "fa-play-solid-symbolic";
         child: $L4PageGames page-games {};
       }
-
-      StackPage {
-        name: "settings";
-        child: $L4PageSettings page-settings {};
-      }
-
-      StackPage {
-        name: "about";
-        child: $L4PageAbout page-about {};
-      }
+    }
+    Adw.ViewSwitcherBar {
+      stack: stack;
+      reveal: bind title.title-visible;
     }
   }
 }
