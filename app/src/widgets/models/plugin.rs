@@ -1,4 +1,4 @@
-use super::item_model;
+use deps::utils::item_model;
 use gtk::{
     gdk::{Paintable, Texture},
     glib::{ParamSpecObject, ParamSpecString},
@@ -21,7 +21,7 @@ item_model!(
     }
 );
 
-struct PluginInner {
+pub struct PluginInner {
     plugin: Weak<dyn core::Plugin>,
     icon_paintable: Paintable,
 }
@@ -33,6 +33,10 @@ impl PluginInner {
             icon_paintable: Texture::for_pixbuf(&plugin.image_with_fallback(ImageType::Icon))
                 .into(),
         }
+    }
+
+    pub fn plugin(&self) -> Option<Arc<dyn core::Plugin>> {
+        self.plugin.upgrade()
     }
 
     fn id(&self) -> Option<String> {

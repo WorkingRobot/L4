@@ -1,5 +1,5 @@
-use super::composite_widget;
 use super::models;
+use deps::utils::composite_widget;
 use gtk::{
     gio::ListStore, glib, subclass::prelude::*, CompositeTemplate, SingleSelection, TemplateChild,
 };

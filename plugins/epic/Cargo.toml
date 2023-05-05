@@ -10,6 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 plugins_core = { path = "../core" }
+deps = { path = "../../deps" }
 reqwest = { version = "*", features = ["json"] }
 serde = { version = "*", features = ["derive"] }
 serde-enum-str = "*"

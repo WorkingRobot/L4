@@ -1,47 +1,24 @@
-use adw::{prelude::*, subclass::prelude::*, AboutWindow, ComboRow, PreferencesPage};
+use adw::{subclass::prelude::*, AboutWindow, ComboRow, PreferencesPage};
 use deps::utils::composite_widget;
 use gtk::{
-    gio::{resources_enumerate_children, ListStore, ResourceLookupFlags},
+    gio::{resources_enumerate_children, ResourceLookupFlags},
     glib,
+    prelude::{ObjectExt, ToValue},
     traits::GtkWindowExt,
     CompositeTemplate, StringList, TemplateChild,
 };
-use once_cell::unsync::OnceCell;
-use std::cell::RefCell;
+use plugins_core::prelude::*;
 
-use super::models;
-
-composite_widget!(SettingsWindow => "L4SettingsWindow",
-    @inner SettingsWindowInner!,
-    @parent adw::PreferencesWindow,
-    @extends adw::PreferencesWindow, adw::Window, gtk::Window, gtk::Widget,
-    @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget, gtk::Native, gtk::Root, gtk::ShortcutManager
+composite_widget!(Settings => "EpicSettings",
+    @inner SettingsInner!,
+    @parent adw::PreferencesGroup,
+    @extends adw::PreferencesGroup, gtk::Widget,
+    @implements gtk::Accessible, gtk::Buildable, gtk::ConstraintTarget
 );
 
-pub struct SettingsWindowData {
-    plugin_store: ListStore,
-}
-
-impl SettingsWindowData {
-    fn new(_outer: &SettingsWindowInner, plugin_store: ListStore) -> Self {
-        let this = Self { plugin_store };
-        for plugin in &this.plugin_store {
-            let plugin = plugin
-                .unwrap()
-                .downcast_ref::<models::Plugin>()
-                .unwrap()
-                .imp()
-                .plugin()
-                .unwrap();
-            _outer.plugins_page.add(&plugin.get_settings_widget());
-        }
-        this
-    }
-}
-
 #[derive(CompositeTemplate, Default)]
-#[template(resource = "/me/workingrobot/l4/templates/settings_window.ui")]
-pub struct SettingsWindowInner {
+#[template(resource = "/me/workingrobot/l4/epic/templates/settings.ui")]
+pub struct SettingsInner {
     #[template_child(id = "plugins-page")]
     plugins_page: TemplateChild<PreferencesPage>,
 
@@ -50,16 +27,14 @@ pub struct SettingsWindowInner {
 
     #[template_child(id = "theme-combo")]
     theme_combo: TemplateChild<ComboRow>,
-
-    data: RefCell<OnceCell<SettingsWindowData>>,
 }
 
 #[gtk::template_callbacks]
-impl SettingsWindowInner {
+impl SettingsInner {
     #[template_callback]
     fn on_open_about(&self) {
         AboutWindow::builder()
-            .application_name("L4")
+            .application_name("Epic Games")
             .application_icon("icon")
             .modal(true)
             .version("0.1.0")
@@ -73,7 +48,7 @@ impl SettingsWindowInner {
     }
 }
 
-impl ObjectImpl for SettingsWindowInner {
+impl ObjectImpl for SettingsInner {
     fn constructed(&self) {
         self.parent_constructed();
 
@@ -103,22 +78,12 @@ impl ObjectImpl for SettingsWindowInner {
     }
 }
 
-impl WidgetImpl for SettingsWindowInner {}
+impl WidgetImpl for SettingsInner {}
 
-impl WindowImpl for SettingsWindowInner {}
+impl PreferencesGroupImpl for SettingsInner {}
 
-impl AdwWindowImpl for SettingsWindowInner {}
-
-impl PreferencesWindowImpl for SettingsWindowInner {}
-
-impl SettingsWindow {
-    pub fn new(plugin_model: ListStore) -> Self {
-        let window = glib::Object::builder::<Self>().build();
-        let imp = window.imp();
-        _ = imp
-            .data
-            .borrow()
-            .set(SettingsWindowData::new(&imp, plugin_model));
-        window
+impl Settings {
+    pub fn new() -> Self {
+        glib::Object::builder().build()
     }
 }

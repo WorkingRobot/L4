@@ -1,4 +1,4 @@
-use super::item_model;
+use deps::utils::item_model;
 use gtk::glib::ParamSpecString;
 use once_cell::sync::Lazy;
 use plugins_core::prelude::*;
@@ -16,7 +16,7 @@ item_model!(
     }
 );
 
-struct GameInner {
+pub struct GameInner {
     game: Weak<dyn core::App>,
 }
 

@@ -1,0 +1,36 @@
+using Gtk 4.0;
+using Gio 2.0;
+using Adw 1;
+
+template EpicSettings: Adw.PreferencesGroup {
+  title: _("Epic Games");
+
+  Adw.ComboRow theme-combo {
+    title: _("Account");
+    subtitle: _("Select the account for Epic Games to use.");
+
+    model: StringList account-list {
+    };
+
+    Button add-account-button {
+      icon-name: "list-add-symbolic";
+      valign: center;
+      tooltip-text: _("Add Account");
+
+      clicked => $on_add_account() swapped;
+    }
+  }
+
+  Adw.ActionRow about-button {
+    title: _("About");
+    subtitle: _("About Epic Games");
+    activatable: true;
+
+    activated => $on_open_about() swapped;
+
+    [suffix]
+    Image {
+      icon-name: "adw-external-link-symbolic";
+    }
+  }
+}

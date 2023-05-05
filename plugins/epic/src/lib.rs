@@ -6,6 +6,7 @@
 use std::sync::Arc;
 
 mod plugin;
+mod ui;
 mod user;
 mod web;
 

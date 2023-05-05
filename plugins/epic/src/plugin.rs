@@ -1,5 +1,6 @@
 use crate::web::ClientAuthed;
 
+use super::ui;
 use super::User;
 use fragile::Fragile;
 use gtk::gdk_pixbuf::Pixbuf;
@@ -21,7 +22,7 @@ impl Plugin {
             user: None,
             web_client: None,
             image_icon: Pixbuf::from_resource_at_scale(
-                "/me/workingrobot/l4/epic/icon.svg",
+                "/me/workingrobot/l4/epic/graphics/icon.svg",
                 256,
                 256,
                 true,
@@ -29,7 +30,7 @@ impl Plugin {
             .unwrap()
             .into(),
             image_banner: Pixbuf::from_resource_at_scale(
-                "/me/workingrobot/l4/epic/banner.png",
+                "/me/workingrobot/l4/epic/graphics/banner.png",
                 1920,
                 1080,
                 true,
@@ -96,7 +97,7 @@ impl core::Plugin for Plugin {
         unimplemented!()
     }
 
-    async fn open_auth_session(&self) -> Option<core::AuthSession> {
-        unimplemented!()
+    fn get_settings_widget(&self) -> adw::PreferencesGroup {
+        ui::Settings::new().into()
     }
 }

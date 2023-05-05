@@ -1,6 +1,6 @@
-use super::{composite_widget, models, PageGames, PagePlugins, SettingsWindow};
+use super::{models, PageGames, PagePlugins, SettingsWindow};
 use adw::subclass::prelude::*;
-use deps::plugins::PluginRegistry;
+use deps::{plugins::PluginRegistry, utils::composite_widget};
 use gtk::{
     gio::{self, ListStore},
     glib,
@@ -89,7 +89,7 @@ impl AppWindowInner {
 
     #[template_callback]
     fn on_open_settings(&self) {
-        SettingsWindow::new(&self.data.borrow().get().unwrap().plugin_store).present();
+        SettingsWindow::new(self.data.borrow().get().unwrap().plugin_store.clone()).present();
     }
 }
 

@@ -1,4 +1,4 @@
-use super::composite_widget;
+use deps::utils::composite_widget;
 use gtk::{gio::ListStore, glib, subclass::prelude::*, CompositeTemplate, SingleSelection};
 
 composite_widget!(PageGames => "L4PageGames",

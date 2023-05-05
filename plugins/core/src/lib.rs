@@ -3,7 +3,6 @@
 #![allow(incomplete_features)]
 
 use async_trait::async_trait;
-use generator::Generator;
 use gtk::{
     self,
     gdk_pixbuf::{Colorspace, Pixbuf},
@@ -39,20 +38,12 @@ pub trait User {
     fn region(&self) -> Option<&str>;
 }
 
-pub enum AuthStep {
-    Complete(Box<dyn User>),
-    Fatal(),
-    Screen(),
-}
-
 #[non_exhaustive]
 #[derive(Clone, Copy)]
 pub enum ImageType {
     Icon,   // Aspect: 1:1, Size: 256x256
     Banner, // Aspect 16:9, Size: 1920x1080
 }
-
-pub type AuthSession<'a> = Generator<'a, AuthStep, AuthStep>;
 
 pub trait Identity: Send + Sync {
     fn id(&self) -> &str;
@@ -82,7 +73,7 @@ pub trait Plugin: Identity {
     fn client(&self) -> &dyn Client;
 
     async fn get_user(&self) -> Option<Box<dyn User>>;
-    async fn open_auth_session(&self) -> Option<AuthSession>;
+    fn get_settings_widget(&self) -> adw::PreferencesGroup;
 
     async fn get_available_apps(&self) -> Option<Vec<Box<dyn App>>>;
 }
