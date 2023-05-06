@@ -12,9 +12,6 @@ use std::path::Path;
 use std::sync::Arc;
 pub mod prelude;
 
-pub static CORE_VERSION: &str = env!("CARGO_PKG_VERSION");
-pub static RUSTC_VERSION: &str = env!("RUSTC_VERSION");
-
 pub trait InstalledApp {
     fn id(&self) -> &str;
     fn name(&self) -> &str;
@@ -82,10 +79,8 @@ pub trait Client: Identity {}
 
 #[derive(Copy, Clone)]
 pub struct PluginDeclaration {
-    pub rustc_version: &'static str,
-    pub core_version: &'static str,
     pub gresource: &'static [u8],
-    pub register: unsafe fn(client: Arc<dyn Client>) -> Arc<dyn Plugin>,
+    pub register: fn(client: Arc<dyn Client>) -> Arc<dyn Plugin>,
 }
 
 #[macro_export]
@@ -94,8 +89,6 @@ macro_rules! export_plugin {
         #[doc(hidden)]
         #[no_mangle]
         pub static plugin_declaration: $crate::PluginDeclaration = $crate::PluginDeclaration {
-            rustc_version: $crate::RUSTC_VERSION,
-            core_version: $crate::CORE_VERSION,
             gresource: include_bytes!(concat!(env!("OUT_DIR"), "/", $gresource_path)),
             register: |client| Arc::new(plugin::Plugin::new(client)),
         };

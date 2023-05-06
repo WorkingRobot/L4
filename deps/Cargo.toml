@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-libloading = "*"
 plugins_core = { path = "../plugins/core" }
 gtk = { package = "gtk4", version = "0.6", features = ["v4_10"] }
 gdk4-win32 = "*"

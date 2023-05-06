@@ -36,16 +36,9 @@ impl AppWindowData {
     }
 
     fn load_plugins(&mut self) {
-        std::fs::read_dir(std::env::current_exe().unwrap().parent().unwrap())
-            .unwrap()
-            .flatten()
-            .filter(|e| e.metadata().map_or(false, |m| m.is_file()))
-            .filter(|e| {
-                e.file_name()
-                    .to_str()
-                    .map_or(false, |f| f.starts_with("plugins_") && f.ends_with(".dll"))
-            })
-            .for_each(|e| unsafe { self.registry.load(e.path()) }.unwrap());
+        for decl in [&plugins_epic::plugin_declaration] {
+            self.registry.load(decl).unwrap();
+        }
 
         for plugin in self.registry.iter_plugins() {
             self.plugin_store.append(&models::Plugin::new(plugin));
