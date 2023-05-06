@@ -14,6 +14,9 @@ ntapi = "*"
 winapi = { version = "*", features = ["std"] }
 fs2 = "*"
 superslice = "*"
+rmp-serde = "*"
+rmpv = { version = "*", features = ["with-serde"] }
+serde = "*"
 
 [dev-dependencies]
 tempfile = "*"
