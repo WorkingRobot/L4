@@ -1,12 +1,6 @@
-use adw::{subclass::prelude::*, AboutWindow, ComboRow, PreferencesPage};
+use adw::{subclass::prelude::*, AboutWindow};
 use deps::utils::composite_widget;
-use gtk::{
-    gio::{resources_enumerate_children, ResourceLookupFlags},
-    glib,
-    prelude::{ObjectExt, ToValue},
-    traits::GtkWindowExt,
-    CompositeTemplate, StringList, TemplateChild,
-};
+use gtk::{glib, traits::GtkWindowExt, CompositeTemplate, StringList, TemplateChild};
 use plugins_core::prelude::*;
 
 composite_widget!(Settings => "EpicSettings",
@@ -19,14 +13,8 @@ composite_widget!(Settings => "EpicSettings",
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/me/workingrobot/l4/epic/templates/settings.ui")]
 pub struct SettingsInner {
-    #[template_child(id = "plugins-page")]
-    plugins_page: TemplateChild<PreferencesPage>,
-
-    #[template_child(id = "theme-list")]
-    theme_list: TemplateChild<StringList>,
-
-    #[template_child(id = "theme-combo")]
-    theme_combo: TemplateChild<ComboRow>,
+    #[template_child(id = "account-list")]
+    account_list: TemplateChild<StringList>,
 }
 
 #[gtk::template_callbacks]
@@ -46,35 +34,16 @@ impl SettingsInner {
             .build()
             .present();
     }
+
+    #[template_callback]
+    fn on_add_account(&self) {
+        self.account_list.append("Asriel_Dev2");
+    }
 }
 
 impl ObjectImpl for SettingsInner {
     fn constructed(&self) {
         self.parent_constructed();
-
-        let mut themes =
-            resources_enumerate_children("/org/gtk/libgtk/theme", ResourceLookupFlags::NONE)
-                .unwrap()
-                .iter()
-                .filter_map(|t| t.strip_suffix("/").map(str::to_owned))
-                .collect::<Vec<_>>();
-        themes.sort();
-        self.theme_list
-            .splice(0, 0, &themes.iter().map(String::as_str).collect::<Vec<_>>());
-
-        gtk::Settings::default()
-            .unwrap()
-            .bind_property("gtk-theme-name", &self.theme_combo.get(), "selected")
-            .transform_to(glib::clone!(@strong themes => move |_, s: &str| {
-                themes
-                    .iter()
-                    .position(|t| s == t)
-                    .map(|p| (p as u32).to_value())
-            }))
-            .transform_from(glib::clone!(@strong themes => move |_, s: u32| Some(themes[s as usize].to_value())))
-            .bidirectional()
-            .sync_create()
-            .build();
     }
 }
 

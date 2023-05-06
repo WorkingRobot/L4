@@ -5,20 +5,29 @@ using Adw 1;
 template EpicSettings: Adw.PreferencesGroup {
   title: _("Epic Games");
 
-  Adw.ComboRow theme-combo {
+  Adw.ActionRow account-combo {
     title: _("Account");
     subtitle: _("Select the account for Epic Games to use.");
+    activatable-widget: account-dropdown;
 
-    model: StringList account-list {
-    };
-
-    Button add-account-button {
-      icon-name: "list-add-symbolic";
+    [suffix]
+    Box {
+      styles ["linked"]
       valign: center;
-      tooltip-text: _("Add Account");
 
-      clicked => $on_add_account() swapped;
+      DropDown account-dropdown {
+        model: StringList account-list {
+        };
+      }
+
+      Button add-account-button {
+        icon-name: "list-add-symbolic";
+        tooltip-text: _("Add Account");
+
+        clicked => $on_add_account() swapped;
+      }
     }
+
   }
 
   Adw.ActionRow about-button {
