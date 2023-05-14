@@ -56,3 +56,9 @@ impl Settings {
         glib::Object::builder().build()
     }
 }
+
+impl Default for Settings {
+    fn default() -> Self {
+        Self::new()
+    }
+}

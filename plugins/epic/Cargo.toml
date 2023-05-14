@@ -15,6 +15,7 @@ rand = "*"
 serde_json = "*"
 tokio = "*"
 fragile = "*"
+once_cell = "*"
 
 [build-dependencies]
 build-scripts = { path = "../../build" }

@@ -67,11 +67,9 @@ pub trait Identity: Send + Sync {
 
 #[async_trait]
 pub trait Plugin: Identity {
-    fn new(client: Arc<impl Client>) -> Self
+    fn new(client: Arc<impl Client + 'static>) -> Self
     where
         Self: Sized;
-
-    fn gresource(&self) -> &'static [u8];
 
     async fn get_user(&self) -> Option<Box<dyn User>>;
     fn get_settings_widget(&self) -> adw::PreferencesGroup;

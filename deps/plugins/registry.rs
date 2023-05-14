@@ -15,45 +15,21 @@ impl PluginRegistry {
         }
     }
 
-    pub fn load<T: Plugin>(&mut self) -> Result<(), gtk::glib::Error> {
+    pub fn load<T: Plugin + 'static>(&mut self) -> Result<(), gtk::glib::Error> {
         let plugin = T::new(self.client.clone());
 
-        if !plugin.gresource().is_empty() {
-            let bytes = gtk::glib::Bytes::from_static(plugin.gresource());
-            let resource = gtk::gio::Resource::from_data(&bytes)?;
-            gtk::gio::resources_register(&resource);
-        }
-
-        self.plugins
-            .push(PluginHandle::new(decl, self.client.clone())?);
+        self.plugins.push(Arc::new(plugin));
 
         Ok(())
     }
 
     pub fn iter_plugins(&self) -> impl Iterator<Item = Arc<dyn Plugin + 'static>> + '_ {
-        self.plugins.iter().map(|p| p.plugin.clone())
+        self.plugins.iter().map(|p| p.clone())
     }
 }
 
 impl Default for PluginRegistry {
     fn default() -> Self {
         Self::new()
-    }
-}
-
-impl PluginHandle {
-    fn new(
-        decl: &'static PluginDeclaration,
-        client: Arc<Client>,
-    ) -> Result<Self, gtk::glib::Error> {
-        if !decl.gresource.is_empty() {
-            let bytes = gtk::glib::Bytes::from_static(decl.gresource);
-            let resource = gtk::gio::Resource::from_data(&bytes)?;
-            gtk::gio::resources_register(&resource);
-        }
-
-        let plugin = (decl.register)(client);
-
-        Ok(Self { plugin })
     }
 }

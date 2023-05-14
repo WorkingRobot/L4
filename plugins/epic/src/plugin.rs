@@ -1,9 +1,8 @@
-use crate::web::ClientAuthed;
-
 use super::ui;
-use super::User;
+use crate::{user::User, web::ClientAuthed};
 use fragile::Fragile;
 use gtk::gdk_pixbuf::Pixbuf;
+use once_cell::sync::Lazy;
 use plugins_core::prelude::*;
 use std::sync::Arc;
 
@@ -15,8 +14,63 @@ pub struct Plugin {
     image_banner: Fragile<Pixbuf>,
 }
 
-impl Plugin {
-    pub fn new(client: Arc<dyn core::Client>) -> Self {
+impl core::Identity for Plugin {
+    fn id(&self) -> &'static str {
+        "epic"
+    }
+
+    fn name(&self) -> &'static str {
+        "Epic Games"
+    }
+
+    fn description(&self) -> &'static str {
+        "Epic Games Store Integration"
+    }
+
+    fn version(&self) -> &'static Version {
+        static VERSION: Lazy<Version> =
+            Lazy::new(|| Version::parse(env!("CARGO_PKG_VERSION")).unwrap());
+        &VERSION
+    }
+
+    fn authors(&self) -> &'static [&'static str] {
+        static AUTHORS: Lazy<Vec<&str>> =
+            Lazy::new(|| env!("CARGO_PKG_AUTHORS").split(':').collect());
+        &AUTHORS
+    }
+
+    fn repository_url(&self) -> &'static str {
+        env!("CARGO_PKG_REPOSITORY")
+    }
+
+    fn license(&self) -> &'static str {
+        env!("CARGO_PKG_LICENSE")
+    }
+
+    fn image(&self, image_type: ImageType) -> Option<Pixbuf> {
+        match image_type {
+            ImageType::Icon => Some(self.image_icon.get().clone()),
+            ImageType::Banner => Some(self.image_banner.get().clone()),
+            _ => None,
+        }
+    }
+}
+
+#[async_trait]
+impl core::Plugin for Plugin {
+    fn new(client: Arc<impl plugins_core::Client + 'static>) -> Self
+    where
+        Self: Sized,
+    {
+        {
+            let bytes = gtk::glib::Bytes::from_static(include_bytes!(concat!(
+                env!("OUT_DIR"),
+                "/epic.gresource"
+            )));
+            let resource = gtk::gio::Resource::from_data(&bytes).unwrap();
+            gtk::gio::resources_register(&resource);
+        }
+
         Self {
             client,
             user: None,
@@ -38,51 +92,6 @@ impl Plugin {
             .unwrap()
             .into(),
         }
-    }
-}
-
-impl core::Identity for Plugin {
-    fn id(&self) -> &str {
-        "epic"
-    }
-
-    fn name(&self) -> &str {
-        "Epic Games"
-    }
-
-    fn description(&self) -> &str {
-        "Epic Games Store Integration"
-    }
-
-    fn version(&self) -> Version {
-        Version::parse(env!("CARGO_PKG_VERSION")).unwrap()
-    }
-
-    fn authors(&self) -> Vec<&str> {
-        env!("CARGO_PKG_AUTHORS").split(':').collect()
-    }
-
-    fn repository_url(&self) -> &str {
-        env!("CARGO_PKG_REPOSITORY")
-    }
-
-    fn license(&self) -> &str {
-        env!("CARGO_PKG_LICENSE")
-    }
-
-    fn image(&self, image_type: ImageType) -> Option<Pixbuf> {
-        match image_type {
-            ImageType::Icon => Some(self.image_icon.get().clone()),
-            ImageType::Banner => Some(self.image_banner.get().clone()),
-            _ => None,
-        }
-    }
-}
-
-#[async_trait]
-impl core::Plugin for Plugin {
-    fn client(&self) -> &dyn core::Client {
-        self.client.as_ref()
     }
 
     async fn get_available_apps(&self) -> Option<Vec<Box<dyn core::App>>> {

@@ -51,7 +51,7 @@ impl PluginInner {
         self.plugin.upgrade().map(|p| p.description().to_string())
     }
 
-    fn version(&self) -> Option<Version> {
+    fn version(&self) -> Option<&Version> {
         self.plugin.upgrade().map(|p| p.version())
     }
 

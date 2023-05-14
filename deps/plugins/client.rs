@@ -1,4 +1,5 @@
 use gtk::gdk_pixbuf::Pixbuf;
+use once_cell::sync::Lazy;
 use plugins_core::prelude::*;
 
 pub struct Client;
@@ -19,13 +20,15 @@ impl core::Identity for Client {
     }
 
     fn version(&self) -> &'static Version {
-        static version: Version = Version::parse(env!("CARGO_PKG_VERSION")).unwrap();
-        &version
+        static VERSION: Lazy<Version> =
+            Lazy::new(|| Version::parse(env!("CARGO_PKG_VERSION")).unwrap());
+        &VERSION
     }
 
     fn authors(&self) -> &'static [&'static str] {
-        static authors: Vec<&str> = env!("CARGO_PKG_AUTHORS").split(':').collect();
-        &authors
+        static AUTHORS: Lazy<Vec<&str>> =
+            Lazy::new(|| env!("CARGO_PKG_AUTHORS").split(':').collect());
+        &AUTHORS
     }
 
     fn repository_url(&self) -> &'static str {

@@ -81,7 +81,7 @@ impl ObjectImpl for SettingsWindowInner {
             resources_enumerate_children("/org/gtk/libgtk/theme", ResourceLookupFlags::NONE)
                 .unwrap()
                 .iter()
-                .filter_map(|t| t.strip_suffix("/").map(str::to_owned))
+                .filter_map(|t| t.strip_suffix('/').map(str::to_owned))
                 .collect::<Vec<_>>();
         themes.sort();
         self.theme_list
@@ -118,7 +118,7 @@ impl SettingsWindow {
         _ = imp
             .data
             .borrow()
-            .set(SettingsWindowData::new(&imp, plugin_model));
+            .set(SettingsWindowData::new(imp, plugin_model));
         window
     }
 }

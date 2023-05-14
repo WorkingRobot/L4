@@ -3,8 +3,6 @@
 #![allow(incomplete_features)]
 #![allow(dead_code)]
 
-use std::sync::Arc;
-
 mod plugin;
 mod ui;
 mod user;
