@@ -72,7 +72,7 @@ impl Storage {
         Ok(Self { file, data })
     }
 
-    pub fn get<T: DeserializeOwned, P: AsRef<dyn plugins_core::Plugin>>(
+    pub fn get<T: DeserializeOwned, P: AsRef<impl plugins_core::Plugin>>(
         &self,
         plugin: P,
     ) -> Result<T, Error> {
@@ -85,7 +85,7 @@ impl Storage {
             })
     }
 
-    pub fn set<T: Serialize, P: AsRef<dyn plugins_core::Plugin>>(
+    pub fn set<T: Serialize, P: AsRef<impl plugins_core::Plugin>>(
         &mut self,
         plugin: P,
         data: T,

@@ -8,8 +8,8 @@ use gtk::{
     gdk_pixbuf::{Colorspace, Pixbuf},
 };
 use semver::Version;
-use std::path::Path;
-use std::sync::Arc;
+use static_assertions::assert_obj_safe;
+use std::{path::Path, sync::Arc};
 pub mod prelude;
 
 pub trait InstalledApp {
@@ -43,13 +43,13 @@ pub enum ImageType {
 }
 
 pub trait Identity: Send + Sync {
-    fn id(&self) -> &str;
-    fn name(&self) -> &str;
-    fn description(&self) -> &str;
-    fn version(&self) -> Version;
-    fn authors(&self) -> Vec<&str>;
-    fn repository_url(&self) -> &str;
-    fn license(&self) -> &str;
+    fn id(&self) -> &'static str;
+    fn name(&self) -> &'static str;
+    fn description(&self) -> &'static str;
+    fn version(&self) -> &'static Version;
+    fn authors(&self) -> &'static [&'static str];
+    fn repository_url(&self) -> &'static str;
+    fn license(&self) -> &'static str;
     fn image(&self, image_type: ImageType) -> Option<Pixbuf>;
 
     fn image_with_fallback(&self, image_type: ImageType) -> Pixbuf {
@@ -67,7 +67,11 @@ pub trait Identity: Send + Sync {
 
 #[async_trait]
 pub trait Plugin: Identity {
-    fn client(&self) -> &dyn Client;
+    fn new(client: Arc<impl Client>) -> Self
+    where
+        Self: Sized;
+
+    fn gresource(&self) -> &'static [u8];
 
     async fn get_user(&self) -> Option<Box<dyn User>>;
     fn get_settings_widget(&self) -> adw::PreferencesGroup;
@@ -77,20 +81,4 @@ pub trait Plugin: Identity {
 
 pub trait Client: Identity {}
 
-#[derive(Copy, Clone)]
-pub struct PluginDeclaration {
-    pub gresource: &'static [u8],
-    pub register: fn(client: Arc<dyn Client>) -> Arc<dyn Plugin>,
-}
-
-#[macro_export]
-macro_rules! export_plugin {
-    ($register:ty, $gresource_path:expr) => {
-        #[doc(hidden)]
-        #[no_mangle]
-        pub static plugin_declaration: $crate::PluginDeclaration = $crate::PluginDeclaration {
-            gresource: include_bytes!(concat!(env!("OUT_DIR"), "/", $gresource_path)),
-            register: |client| Arc::new(plugin::Plugin::new(client)),
-        };
-    };
-}
+assert_obj_safe!(Identity, Plugin, Client, User, App, InstalledApp);

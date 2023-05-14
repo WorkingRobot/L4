@@ -12,3 +12,4 @@ tokio = {version = "*", features = ["full"]}
 async-trait = "*"
 gtk = { package = "gtk4", version = "0.6", features = ["v4_10"] }
 adw = { package = "libadwaita", version = "0.4", features = ["v1_2"] }
+static_assertions = "*"

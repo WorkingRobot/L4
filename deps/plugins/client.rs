@@ -6,31 +6,33 @@ pub struct Client;
 impl core::Client for Client {}
 
 impl core::Identity for Client {
-    fn id(&self) -> &str {
+    fn id(&self) -> &'static str {
         env!("CARGO_PKG_NAME")
     }
 
-    fn name(&self) -> &str {
+    fn name(&self) -> &'static str {
         "L4"
     }
 
-    fn description(&self) -> &str {
+    fn description(&self) -> &'static str {
         env!("CARGO_PKG_DESCRIPTION")
     }
 
-    fn version(&self) -> Version {
-        Version::parse(env!("CARGO_PKG_VERSION")).unwrap()
+    fn version(&self) -> &'static Version {
+        static version: Version = Version::parse(env!("CARGO_PKG_VERSION")).unwrap();
+        &version
     }
 
-    fn authors(&self) -> Vec<&str> {
-        env!("CARGO_PKG_AUTHORS").split(':').collect()
+    fn authors(&self) -> &'static [&'static str] {
+        static authors: Vec<&str> = env!("CARGO_PKG_AUTHORS").split(':').collect();
+        &authors
     }
 
-    fn repository_url(&self) -> &str {
+    fn repository_url(&self) -> &'static str {
         env!("CARGO_PKG_REPOSITORY")
     }
 
-    fn license(&self) -> &str {
+    fn license(&self) -> &'static str {
         env!("CARGO_PKG_LICENSE")
     }
 

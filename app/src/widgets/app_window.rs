@@ -37,7 +37,7 @@ impl AppWindowData {
 
     fn load_plugins(&mut self) {
         for decl in [&plugins_epic::plugin_declaration] {
-            self.registry.load(decl).unwrap();
+            self.registry.load::<plugins_epic::Plugin>().unwrap();
         }
 
         for plugin in self.registry.iter_plugins() {

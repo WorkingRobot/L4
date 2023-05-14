@@ -1,14 +1,10 @@
 use super::Client;
-use plugins_core::{Plugin, PluginDeclaration};
+use plugins_core::Plugin;
 use std::sync::Arc;
 
 pub struct PluginRegistry {
     client: Arc<Client>,
-    plugins: Vec<PluginHandle>,
-}
-
-struct PluginHandle {
-    plugin: Arc<dyn Plugin>,
+    plugins: Vec<Arc<dyn Plugin>>,
 }
 
 impl PluginRegistry {
@@ -19,7 +15,15 @@ impl PluginRegistry {
         }
     }
 
-    pub fn load(&mut self, decl: &'static PluginDeclaration) -> Result<(), gtk::glib::Error> {
+    pub fn load<T: Plugin>(&mut self) -> Result<(), gtk::glib::Error> {
+        let plugin = T::new(self.client.clone());
+
+        if !plugin.gresource().is_empty() {
+            let bytes = gtk::glib::Bytes::from_static(plugin.gresource());
+            let resource = gtk::gio::Resource::from_data(&bytes)?;
+            gtk::gio::resources_register(&resource);
+        }
+
         self.plugins
             .push(PluginHandle::new(decl, self.client.clone())?);
 

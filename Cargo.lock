@@ -1196,6 +1196,7 @@ dependencies = [
  "gtk4",
  "libadwaita",
  "semver",
+ "static_assertions",
  "tokio",
  "toml 0.7.3",
 ]
