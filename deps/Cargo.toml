@@ -18,6 +18,7 @@ rmp-serde = "*"
 rmpv = { version = "*", features = ["with-serde"] }
 serde = "*"
 once_cell = "*"
+winreg = { version = "*", features = ["transactions"] }
 
 [dev-dependencies]
 tempfile = "*"
