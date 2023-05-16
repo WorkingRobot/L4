@@ -77,6 +77,24 @@ macro_rules! item_model {
     };
 }
 
+#[macro_export]
+macro_rules! subclassed_gobject {
+    ($name:tt => $glib_name:expr, @inner $inner_name:ident, @parent $parent:ty, @extends $($extend_types:ty),*, @implements $($impl_types:ty),* $(,)?) => {
+        #[glib::object_subclass]
+        impl ObjectSubclass for $inner_name {
+            const NAME: &'static str = $glib_name;
+            type Type = $name;
+            type ParentType = $parent;
+        }
+
+        glib::wrapper! {
+            pub struct $name(ObjectSubclass<$inner_name>)
+                @extends $($extend_types),*,
+                @implements $($impl_types),*;
+        }
+    };
+}
+
 // @inner InnerName! implies added callbacks
 #[macro_export]
 macro_rules! composite_widget {
@@ -138,4 +156,4 @@ macro_rules! composite_widget {
     };
 }
 
-pub use {composite_widget, item_model};
+pub use {composite_widget, item_model, subclassed_gobject};
