@@ -14,6 +14,9 @@ pub struct MappedFileMut {
 }
 
 impl MappedFileMut {
+    /// Create a new writable mapped file.
+    /// # Safety
+    /// Calls undocumented ntdll APIs.
     pub unsafe fn new<T: AsRawDescriptor>(file: T) -> io::Result<Self> {
         let mut section = Section::new(file, true)?;
         section.map()?;
@@ -29,6 +32,9 @@ impl MappedFileMut {
         }
     }
 
+    /// Extends & remaps section to ensure the its length is at least `size`.
+    /// # Safety
+    /// Calls undocumented ntdll APIs; may invalidate ptr when other code is still using it.
     pub unsafe fn reserve(&mut self, size: usize) -> io::Result<()> {
         self.section.reserve(size)
     }

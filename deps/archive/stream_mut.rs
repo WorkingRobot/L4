@@ -270,6 +270,7 @@ impl<A: ArchiveMutTrait> StreamMutIter<'_, A> {
     // Cannot impl Iterator until LendingIterator
     // becomes part of the standard library
     // Just use a `while let Some(slice) = iter.next()` loop for now
+    #[allow(clippy::should_implement_trait)]
     pub fn next(&mut self) -> Option<&mut [u8]> {
         if self.current_run_idx > self.end_run_idx {
             return None;

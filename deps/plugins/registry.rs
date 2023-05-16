@@ -24,7 +24,7 @@ impl PluginRegistry {
     }
 
     pub fn iter_plugins(&self) -> impl Iterator<Item = Arc<dyn Plugin + 'static>> + '_ {
-        self.plugins.iter().map(|p| p.clone())
+        self.plugins.iter().cloned()
     }
 }
 

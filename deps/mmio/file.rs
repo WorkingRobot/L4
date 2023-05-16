@@ -14,6 +14,9 @@ pub struct MappedFile {
 }
 
 impl MappedFile {
+    /// Create a new read-only mapped file.
+    /// # Safety
+    /// Calls undocumented ntdll APIs.
     pub unsafe fn new<T: AsRawDescriptor>(file: T) -> io::Result<Self> {
         let mut section = Section::new(file, false)?;
         section.map()?;
