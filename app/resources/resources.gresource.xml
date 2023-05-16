@@ -5,8 +5,6 @@
     <file compressed="true" preprocess="xml-stripblanks">templates/page_games.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">templates/page_plugins.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">templates/settings_window.ui</file>
-    <file compressed="true" preprocess="xml-stripblanks">templates/models/game.ui</file>
-    <file compressed="true" preprocess="xml-stripblanks">templates/models/plugin.ui</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="icon.svg">graphics/icon.svg</file>
     <file compressed="true" alias="style.css">main.css</file>
   </gresource>

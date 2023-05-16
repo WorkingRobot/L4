@@ -1,13 +1,20 @@
 using Gtk 4.0;
 using Gio 2.0;
 
-template L4PageGames: Box {
+template $L4PageGames: Box {
   [start]
   ListView view {
     factory: BuilderListItemFactory {
-      // Holding off on using template {} syntax until
-      // https://gitlab.gnome.org/jwestman/blueprint-compiler/-/issues/110 is fixed
-      resource: "/me/workingrobot/l4/templates/models/game.ui";
+      template ListItem {
+        activatable: true;
+        selectable: true;
+
+        child: Box {
+          Label {
+            label: _("hellooo");
+          }
+        };
+      }
     };
     model: SingleSelection selection {};
   }

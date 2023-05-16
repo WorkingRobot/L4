@@ -1,13 +1,36 @@
 using Gtk 4.0;
 using Gio 2.0;
 
-template L4PagePlugins: Box {
+template $L4PagePlugins: Box {
   [start]
   ListView view {
     factory: BuilderListItemFactory {
-      // Holding off on using template {} syntax until
-      // https://gitlab.gnome.org/jwestman/blueprint-compiler/-/issues/110 is fixed
-      resource: "/me/workingrobot/l4/templates/models/plugin.ui";
+      template ListItem {
+        activatable: true;
+        selectable: true;
+
+        child: Box {
+          Box {
+            orientation: vertical;
+
+            Image {
+              paintable: bind template.item as <$L4ModelPlugin>.icon-paintable;
+              pixel-size: 64;
+            }
+          }
+
+          Box {
+            orientation: vertical;
+
+            Label {
+              label: bind template.item as <$L4ModelPlugin>.name;
+            }
+            Label {
+              label: bind template.item as <$L4ModelPlugin>.version;
+            }
+          }
+        };
+      }
     };
     model: SingleSelection selection {};
   }
