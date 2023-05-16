@@ -14,9 +14,10 @@ pub fn register_protocol(name: &str, schema: &str, subcommand: &str) -> io::Resu
     key.set_value("", &name)?;
     key.set_value("URL Protocol", &"")?;
 
-    key.create_subkey_transacted_with_flags("shell\\open\\command", &t, enums::KEY_WRITE)?;
+    let (command_key, _disp) =
+        key.create_subkey_transacted_with_flags("shell\\open\\command", &t, enums::KEY_WRITE)?;
 
-    key.set_value(
+    command_key.set_value(
         "",
         &format!("\"{}\" \"{subcommand}\" \"%1\"", current_exe()?.display()),
     )?;
