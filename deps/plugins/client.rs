@@ -8,11 +8,7 @@ pub struct Client;
 
 impl core::Client for Client {
     fn register_protocol(&self, plugin: &dyn core::Plugin, schema: &str) -> std::io::Result<()> {
-        register_protocol(
-            format!("L4 Integration - {}", plugin.name()).as_str(),
-            schema,
-            format!("proto-{}", plugin.id()).as_str(),
-        )
+        register_protocol(schema, format!("proto-{}", plugin.id()).as_str())
     }
 }
 
