@@ -2,9 +2,19 @@ use gtk::gdk_pixbuf::Pixbuf;
 use once_cell::sync::Lazy;
 use plugins_core::prelude::*;
 
+use crate::utils::register_protocol;
+
 pub struct Client;
 
-impl core::Client for Client {}
+impl core::Client for Client {
+    fn register_protocol(&self, plugin: &dyn core::Plugin, schema: &str) -> std::io::Result<()> {
+        register_protocol(
+            format!("L4 Integration - {}", plugin.name()).as_str(),
+            schema,
+            format!("proto-{}", plugin.id()).as_str(),
+        )
+    }
+}
 
 impl core::Identity for Client {
     fn id(&self) -> &'static str {

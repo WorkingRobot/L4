@@ -71,7 +71,7 @@ impl core::Plugin for Plugin {
             gtk::gio::resources_register(&resource);
         }
 
-        Self {
+        let this = Self {
             client,
             user: None,
             web_client: None,
@@ -91,7 +91,13 @@ impl core::Plugin for Plugin {
             )
             .unwrap()
             .into(),
-        }
+        };
+
+        this.client
+            .register_protocol(&this, "com.epicgames.fortnite")
+            .unwrap();
+
+        this
     }
 
     async fn get_available_apps(&self) -> Option<Vec<Box<dyn core::App>>> {
@@ -103,10 +109,15 @@ impl core::Plugin for Plugin {
     }
 
     async fn get_user(&self) -> Option<Box<dyn core::User>> {
-        unimplemented!()
+        todo!()
     }
 
     fn get_settings_widget(&self) -> adw::PreferencesGroup {
         ui::Settings::new().into()
+    }
+
+    fn on_protocol_callback(&self, _data: &str) {
+        println!("protocol callback: {_data}");
+        todo!()
     }
 }

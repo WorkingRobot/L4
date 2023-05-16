@@ -73,10 +73,13 @@ pub trait Plugin: Identity {
 
     async fn get_user(&self) -> Option<Box<dyn User>>;
     fn get_settings_widget(&self) -> adw::PreferencesGroup;
+    fn on_protocol_callback(&self, data: &str);
 
     async fn get_available_apps(&self) -> Option<Vec<Box<dyn App>>>;
 }
 
-pub trait Client: Identity {}
+pub trait Client: Identity {
+    fn register_protocol(&self, plugin: &dyn Plugin, schema: &str) -> std::io::Result<()>;
+}
 
 assert_obj_safe!(Identity, Plugin, Client, User, App, InstalledApp);

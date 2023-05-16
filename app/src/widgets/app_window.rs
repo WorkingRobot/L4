@@ -2,7 +2,7 @@ use super::{models, PageGames, PagePlugins, SettingsWindow};
 use adw::subclass::prelude::*;
 use deps::{plugins::PluginRegistry, utils::composite_widget};
 use gtk::{
-    gio::{self, ListStore},
+    gio::{self, prelude::*, ApplicationCommandLine, ListStore},
     glib,
     prelude::StaticType,
     traits::GtkWindowExt,
@@ -76,6 +76,46 @@ impl AppWindowInner {
     #[template_callback]
     fn is_debug_mode(&self) -> bool {
         cfg!(debug_assertions)
+    }
+
+    pub fn on_protocol_callback(
+        &self,
+        command_line: &ApplicationCommandLine,
+    ) -> std::io::Result<()> {
+        let argv = command_line.arguments();
+
+        if argv.len() < 3 {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "argument list is too short",
+            ));
+        }
+
+        let plugin_id = argv[1].to_str().ok_or_else(|| {
+            std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "plugin id is not valid utf-8",
+            )
+        })?;
+        let data = argv[2].to_str().ok_or_else(|| {
+            std::io::Error::new(std::io::ErrorKind::InvalidData, "data is not valid utf-8")
+        })?;
+
+        let plugin_id = plugin_id.strip_prefix("proto-").ok_or_else(|| {
+            std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "plugin id does not being with 'proto-'",
+            )
+        })?;
+
+        self.data
+            .borrow()
+            .get()
+            .unwrap()
+            .registry
+            .on_protocol_callback(plugin_id, data);
+
+        Ok(())
     }
 
     #[template_callback]

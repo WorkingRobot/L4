@@ -26,6 +26,12 @@ impl PluginRegistry {
     pub fn iter_plugins(&self) -> impl Iterator<Item = Arc<dyn Plugin + 'static>> + '_ {
         self.plugins.iter().cloned()
     }
+
+    pub fn on_protocol_callback(&self, plugin_id: &str, data: &str) {
+        if let Some(plugin) = self.plugins.iter().find(|p| p.id() == plugin_id) {
+            plugin.on_protocol_callback(data);
+        }
+    }
 }
 
 impl Default for PluginRegistry {
