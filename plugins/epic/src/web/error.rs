@@ -1,5 +1,6 @@
 use std::future::Future;
 
+#[derive(Debug)]
 pub enum Error {
     ReqwestError(reqwest::Error),
     ResponseShouldBeEmpty,
