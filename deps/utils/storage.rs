@@ -72,12 +72,12 @@ impl Storage {
         Ok(Self { file, data })
     }
 
-    pub fn get<T: DeserializeOwned, P: AsRef<impl plugins_core::Plugin>>(
-        &self,
-        plugin: P,
-    ) -> Result<T, Error> {
-        self.data
-            .get(plugin.as_ref().id())
+    pub fn get_raw(&self, plugin: &dyn plugins_core::Plugin) -> Option<&rmpv::Value> {
+        self.data.get(plugin.id())
+    }
+
+    pub fn get<T: DeserializeOwned>(&self, plugin: &dyn plugins_core::Plugin) -> Result<T, Error> {
+        self.get_raw(plugin)
             .ok_or(Error::DoesNotExist)
             .and_then(|d| -> Result<T, Error> {
                 let v = rmpv::ext::from_value(d.clone())?;
@@ -85,14 +85,16 @@ impl Storage {
             })
     }
 
-    pub fn set<T: Serialize, P: AsRef<impl plugins_core::Plugin>>(
+    pub fn set_raw(&mut self, plugin: &dyn plugins_core::Plugin, data: rmpv::Value) {
+        _ = self.data.insert(plugin.id().to_string(), data);
+    }
+
+    pub fn set<T: Serialize>(
         &mut self,
-        plugin: P,
+        plugin: &dyn plugins_core::Plugin,
         data: T,
     ) -> Result<(), Error> {
-        _ = self
-            .data
-            .insert(plugin.as_ref().id().to_string(), rmpv::ext::to_value(data)?);
+        self.set_raw(plugin, rmpv::ext::to_value(data)?);
         Ok(())
     }
 
