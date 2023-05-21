@@ -1,17 +1,14 @@
-use plugins_core::prelude::async_trait;
 use reqwest::RequestBuilder;
 use serde::de::DeserializeOwned;
 
 use super::Result;
 
-#[async_trait]
 pub trait Sendable: Sized {
     async fn send_into<T: DeserializeOwned>(self) -> Result<T>;
 
     async fn send_into_empty(self) -> Result<()>;
 }
 
-#[async_trait]
 impl Sendable for RequestBuilder {
     async fn send_into<T: DeserializeOwned>(self) -> Result<T> {
         Ok(self.send().await?.json::<T>().await?)

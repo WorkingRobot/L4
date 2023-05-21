@@ -2,7 +2,6 @@
 #![feature(trait_alias)]
 #![allow(incomplete_features)]
 
-use async_trait::async_trait;
 use gtk::{
     self,
     gdk_pixbuf::{Colorspace, Pixbuf},
@@ -65,17 +64,16 @@ pub trait Identity: Send + Sync {
     }
 }
 
-#[async_trait]
 pub trait Plugin: Identity {
     fn new(client: Arc<impl Client + 'static>) -> Self
     where
         Self: Sized;
 
-    async fn get_user(&self) -> Option<Box<dyn User>>;
+    fn get_user(&self) -> Option<Box<dyn User>>;
     fn get_settings_widget(&self) -> adw::PreferencesGroup;
     fn on_protocol_callback(&self, data: &str);
 
-    async fn get_available_apps(&self) -> Option<Vec<Box<dyn App>>>;
+    fn get_available_apps(&self) -> Option<Vec<Box<dyn App>>>;
 }
 
 pub trait Client: Identity {

@@ -38,7 +38,6 @@ impl plugins_core::Identity for Plugin {
     }
 }
 
-#[async_trait]
 impl plugins_core::Plugin for Plugin {
     async fn get_apps(&self) -> Vec<Box<dyn App>> {
         Default::default()
