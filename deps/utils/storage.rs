@@ -67,7 +67,12 @@ impl Storage {
             .create(true)
             .open(path)?;
 
-        let data: HashMap<String, rmpv::Value> = rmp_serde::from_read(&file)?;
+        let data: HashMap<String, rmpv::Value>;
+        if file.metadata()?.len() != 0 {
+            data = rmp_serde::from_read(&file)?;
+        } else {
+            data = Default::default();
+        }
 
         Ok(Self { file, data })
     }
