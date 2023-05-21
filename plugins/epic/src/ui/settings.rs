@@ -14,7 +14,7 @@ composite_widget!(Settings => "EpicSettings",
 #[template(resource = "/me/workingrobot/l4/epic/templates/settings.ui")]
 pub struct SettingsInner {
     #[template_child(id = "account-list")]
-    account_list: TemplateChild<StringList>,
+    pub account_list: TemplateChild<StringList>,
 }
 
 #[gtk::template_callbacks]
@@ -37,7 +37,8 @@ impl SettingsInner {
 
     #[template_callback]
     fn on_add_account(&self) {
-        self.account_list.append("Asriel_Dev2");
+        let launcher = gtk::UriLauncher::new("https://www.epicgames.com/id/embedded/login?client_id=3f69e56c7649492c8cc29f1af08a8a12&response_type=code&display=embedded&prompt=login");
+        launcher.launch(None::<&gtk::Window>, None::<&gtk::gio::Cancellable>, |_| {});
     }
 }
 
