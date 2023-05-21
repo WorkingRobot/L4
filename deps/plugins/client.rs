@@ -10,6 +10,14 @@ impl core::Client for Client {
     fn register_protocol(&self, plugin: &dyn core::Plugin, schema: &str) -> std::io::Result<()> {
         register_protocol(schema, format!("proto-{}", plugin.id()).as_str())
     }
+
+    fn get_storage(&self, plugin: &dyn plugins_core::Plugin) -> Option<rmpv::Value> {
+        self.storage.read().unwrap().get_raw(plugin).cloned()
+    }
+
+    fn set_storage(&self, plugin: &dyn plugins_core::Plugin, data: rmpv::Value) {
+        self.storage.write().unwrap().set_raw(plugin, data)
+    }
 }
 
 impl core::Identity for Client {

@@ -80,6 +80,10 @@ pub trait Plugin: Identity {
 
 pub trait Client: Identity {
     fn register_protocol(&self, plugin: &dyn Plugin, schema: &str) -> std::io::Result<()>;
+
+    fn get_storage(&self, plugin: &dyn Plugin) -> Option<rmpv::Value>;
+
+    fn set_storage(&self, plugin: &dyn Plugin, data: rmpv::Value);
 }
 
 assert_obj_safe!(Identity, Plugin, Client, User, App, InstalledApp);

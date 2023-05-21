@@ -10,7 +10,7 @@ pub struct PluginRegistry {
 impl PluginRegistry {
     pub fn new() -> Self {
         Self {
-            client: Arc::new(Client {}),
+            client: Arc::new(Client::new("plugin-store.mp").unwrap()),
             plugins: vec![],
         }
     }
