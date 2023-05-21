@@ -3,6 +3,7 @@
 #![allow(incomplete_features)]
 #![allow(dead_code)]
 
+mod config;
 mod plugin;
 mod ui;
 mod user;
