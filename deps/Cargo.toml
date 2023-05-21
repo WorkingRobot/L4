@@ -7,7 +7,7 @@ edition = "2021"
 plugins_core = { path = "../plugins/core" }
 gtk = { package = "gtk4", version = "0.6", features = ["v4_10"] }
 gdk4-win32 = "*"
-windows = { version = "*", features = ["Win32_UI_HiDpi", "Win32_Foundation", "Win32_System_Memory"] }
+windows = { version = "*", features = ["Win32_UI_HiDpi", "Win32_Foundation", "Win32_System_Memory", "Win32_Security_Cryptography"] }
 static_assertions = "*"
 semver = "*"
 ntapi = "*"
