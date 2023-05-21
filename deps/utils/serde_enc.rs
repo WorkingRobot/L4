@@ -1,6 +1,7 @@
+use serde::{
+    de::Error, de::SeqAccess, de::Visitor, Deserialize, Deserializer, Serialize, Serializer,
+};
 use std::ops::{Deref, DerefMut};
-
-use serde::{Deserialize, Serialize};
 use windows::{
     Win32::Foundation::FALSE,
     Win32::{
@@ -62,6 +63,9 @@ unsafe fn protect<E: serde::ser::Error>(plaintext: &mut [u8]) -> Result<Vec<u8>,
 }
 
 unsafe fn unprotect<E: serde::de::Error>(ciphertext: &mut [u8]) -> Result<Vec<u8>, E> {
+    if ciphertext.is_empty() {
+        return Ok([].into());
+    }
     let ciphertext_blob = CRYPT_INTEGER_BLOB {
         cbData: ciphertext.len() as u32,
         pbData: ciphertext.as_mut_ptr(),
@@ -91,30 +95,76 @@ unsafe fn unprotect<E: serde::de::Error>(ciphertext: &mut [u8]) -> Result<Vec<u8
 }
 
 impl<T: Serialize + for<'de> Deserialize<'de>> Serialize for Encrypted<T> {
-    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        let mut plaintext = rmp_serde::to_vec(&self.0).map_err(serde::ser::Error::custom)?;
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let mut plaintext = rmp_serde::to_vec_named(&self.0).map_err(serde::ser::Error::custom)?;
         let ciphertext = unsafe { protect(&mut plaintext) }?;
         serializer.serialize_bytes(&ciphertext)
     }
 }
 
 impl<'d, T: Serialize + for<'de> Deserialize<'de>> Deserialize<'d> for Encrypted<T> {
-    fn deserialize<D: serde::Deserializer<'d>>(deserializer: D) -> Result<Self, D::Error> {
-        struct Visitor;
-        impl<'de> serde::de::Visitor<'de> for Visitor {
+    fn deserialize<D: Deserializer<'d>>(deserializer: D) -> Result<Self, D::Error> {
+        struct BufVisitor;
+        impl<'de> Visitor<'de> for BufVisitor {
             type Value = Vec<u8>;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                formatter.write_str("byte buffer")
+                formatter.write_str("encrypted byte buffer")
             }
 
-            fn visit_byte_buf<E: serde::de::Error>(self, v: Vec<u8>) -> Result<Self::Value, E> {
+            fn visit_seq<V: SeqAccess<'de>>(self, mut visitor: V) -> Result<Vec<u8>, V::Error> {
+                let len = std::cmp::min(visitor.size_hint().unwrap_or(0), 4096);
+                let mut bytes = Vec::with_capacity(len);
+
+                while let Some(b) = visitor.next_element()? {
+                    bytes.push(b);
+                }
+
+                Ok(bytes)
+            }
+
+            fn visit_bytes<E: Error>(self, v: &[u8]) -> Result<Vec<u8>, E> {
+                Ok(v.to_vec())
+            }
+
+            fn visit_byte_buf<E: Error>(self, v: Vec<u8>) -> Result<Vec<u8>, E> {
                 Ok(v)
+            }
+
+            fn visit_str<E: Error>(self, v: &str) -> Result<Vec<u8>, E> {
+                Ok(v.into())
+            }
+
+            fn visit_string<E: Error>(self, v: String) -> Result<Vec<u8>, E> {
+                Ok(v.into())
             }
         }
 
-        let mut ciphertext = deserializer.deserialize_bytes(Visitor)?;
+        let mut ciphertext = deserializer.deserialize_byte_buf(BufVisitor)?;
         let plaintext = unsafe { unprotect(&mut ciphertext) }?;
-        rmp_serde::from_slice(&plaintext).map_err(serde::de::Error::custom)
+        rmp_serde::from_slice::<T>(&plaintext)
+            .map(|d| Encrypted(d))
+            .map_err(Error::custom)
     }
+}
+
+#[test]
+fn dpapi_serde() {
+    let val = vec![Encrypted("Hello World".to_string())];
+
+    let ser_val = rmp_serde::to_vec_named(&val);
+    assert!(ser_val.is_ok());
+    let ser_val = ser_val.unwrap();
+
+    let de_val_generic = rmp_serde::from_slice::<rmpv::Value>(&ser_val);
+    assert!(de_val_generic.is_ok());
+    let de_val_generic = de_val_generic.unwrap();
+
+    println!("Deserialized: {de_val_generic:#?}");
+
+    let de_val = rmp_serde::from_slice::<Vec<Encrypted<String>>>(&ser_val);
+    assert!(de_val.is_ok());
+    let de_val = de_val.unwrap();
+
+    assert_eq!(val[0].0, de_val[0].0);
 }

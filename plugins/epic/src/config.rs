@@ -13,4 +13,5 @@ pub struct SavedUserCreds {
 #[derive(Default, Deserialize, Serialize)]
 pub struct Config {
     pub users: Encrypted<Vec<SavedUserCreds>>,
+    pub selected_user: Option<usize>,
 }
