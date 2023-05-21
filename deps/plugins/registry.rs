@@ -18,7 +18,7 @@ impl PluginRegistry {
     pub fn load<T: Plugin + 'static>(&mut self) -> Result<(), gtk::glib::Error> {
         let plugin = T::new(self.client.clone());
 
-        self.plugins.push(Arc::new(plugin));
+        self.plugins.push(plugin);
 
         Ok(())
     }
@@ -29,7 +29,7 @@ impl PluginRegistry {
 
     pub fn on_protocol_callback(&self, plugin_id: &str, data: &str) {
         if let Some(plugin) = self.plugins.iter().find(|p| p.id() == plugin_id) {
-            plugin.on_protocol_callback(data);
+            plugin.clone().on_protocol_callback(data);
         }
     }
 }

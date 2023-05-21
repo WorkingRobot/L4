@@ -65,7 +65,7 @@ pub trait Identity: Send + Sync {
 }
 
 pub trait Plugin: Identity {
-    fn new(client: Arc<impl Client + 'static>) -> Self
+    fn new(client: Arc<impl Client + 'static>) -> Arc<Self>
     where
         Self: Sized;
 

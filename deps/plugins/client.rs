@@ -1,10 +1,20 @@
+use crate::utils::{register_protocol, Storage};
 use gtk::gdk_pixbuf::Pixbuf;
 use once_cell::sync::Lazy;
 use plugins_core::prelude::*;
+use std::{path::Path, sync::RwLock};
 
-use crate::utils::register_protocol;
+pub struct Client {
+    storage: RwLock<Storage>,
+}
 
-pub struct Client;
+impl Client {
+    pub fn new<P: AsRef<Path>>(storage_path: P) -> Result<Self, crate::utils::Error> {
+        Ok(Self {
+            storage: Storage::new(storage_path)?.into(),
+        })
+    }
+}
 
 impl core::Client for Client {
     fn register_protocol(&self, plugin: &dyn core::Plugin, schema: &str) -> std::io::Result<()> {
