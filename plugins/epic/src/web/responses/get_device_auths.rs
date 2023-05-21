@@ -1,4 +1,4 @@
-use std::time::SystemTime;
+use chrono::{DateTime, Utc};
 
 #[derive(serde::Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -24,7 +24,7 @@ pub struct DeviceEventData {
     pub ip_address: String,
 
     // Time of event occurrence
-    pub date_time: SystemTime,
+    pub date_time: DateTime<Utc>,
 }
 
 #[derive(serde::Deserialize, Debug)]

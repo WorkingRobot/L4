@@ -1,4 +1,5 @@
-use std::{collections::HashMap, time::SystemTime};
+use chrono::{DateTime, Utc};
+use std::collections::HashMap;
 
 #[derive(serde::Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -23,7 +24,7 @@ pub struct CatalogKeyImage {
     pub size: i32,
 
     // Date of when the image was uploaded
-    pub uploaded_date: SystemTime,
+    pub uploaded_date: DateTime<Utc>,
 }
 
 #[derive(serde::Deserialize, Debug)]
@@ -59,7 +60,7 @@ pub struct CatalogReleaseInfo {
     pub platform: Vec<String>,
 
     // Date when the release was added
-    pub date_added: Option<SystemTime>,
+    pub date_added: Option<DateTime<Utc>>,
 
     // These 2 fields were seen in poodle/twinmotion, but both were empty
     pub release_note: Option<String>,
@@ -111,10 +112,10 @@ pub struct CatalogItem {
     pub status: String,
 
     // Date created
-    pub creation_date: SystemTime,
+    pub creation_date: DateTime<Utc>,
 
     // Last time the item was modified
-    pub last_modified_date: SystemTime,
+    pub last_modified_date: DateTime<Utc>,
 
     // Custom attributes, e.g. can run offline, presence id, cloud save folders, UAC, etc.
     pub custom_attributes: Option<HashMap<String, CatalogCustomAttribute>>,

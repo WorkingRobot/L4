@@ -1,5 +1,4 @@
-use std::time::SystemTime;
-
+use chrono::Utc;
 use reqwest::RequestBuilder;
 
 use super::{
@@ -496,6 +495,15 @@ impl ClientAuthed {
         unimplemented!()
     }
 
+    // Avatar Service
+
+    // GET https://avatar-service-prod.identity.live.on.epicgames.com/v1/avatar/fortnite/ids?accountIds=accountId1,accoundId2,accountId3,...
+
+    // Profile Service
+
+    // PUT https://global-profile-service.game-social.epicgames.com/profiles
+    // JSON: {"namespace":"Fortnite","accountIds":["accoundId1","accountId2"]}
+
     // Web API
 
     pub fn authorize_eosclient(
@@ -548,7 +556,7 @@ impl ClientTrait for ClientAuthed {
 
 impl Drop for ClientAuthed {
     fn drop(&mut self) {
-        if self.auth_data.expires_at > SystemTime::now() {
+        if self.auth_data.expires_at > Utc::now() {
             tokio::task::spawn(self.kill_token());
         }
     }

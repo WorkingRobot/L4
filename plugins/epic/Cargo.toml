@@ -13,6 +13,7 @@ serde = { version = "*", features = ["derive"] }
 serde-enum-str = "*"
 rand = "*"
 serde_json = "*"
+chrono = { version = "*", features = ["serde"] }
 tokio = "*"
 fragile = "*"
 once_cell = "*"

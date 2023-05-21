@@ -1,4 +1,4 @@
-use std::time::SystemTime;
+use chrono::{DateTime, Utc};
 
 #[derive(serde::Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -40,10 +40,10 @@ pub struct ExternalAuth {
     pub auth_ids: Vec<AuthId>,
 
     // When this connection was added to the epic account (only given if this is your account)
-    pub date_added: Option<SystemTime>,
+    pub date_added: Option<DateTime<Utc>>,
 
     // When this connection was used to login to the epic account (this doesn't look accurate) (optional)
-    pub last_login: Option<SystemTime>,
+    pub last_login: Option<DateTime<Utc>>,
 }
 
 #[derive(serde::Deserialize, Debug)]

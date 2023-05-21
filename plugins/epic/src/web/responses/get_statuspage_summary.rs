@@ -1,6 +1,6 @@
+use chrono::{DateTime, Utc};
 use serde::*;
 use serde_enum_str::Deserialize_enum_str as DeserializeEnum;
-use std::time::SystemTime;
 
 #[derive(Deserialize, Debug)]
 pub struct GetStatuspageSummary {
@@ -15,7 +15,7 @@ pub struct Page {
     pub name: String,
     pub url: String,
     pub timezone: String,
-    pub updated_at: SystemTime,
+    pub updated_at: DateTime<Utc>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -23,8 +23,8 @@ pub struct Component {
     pub id: String,
     pub name: String,
     pub status: ComponentStatus,
-    pub created_at: SystemTime,
-    pub updated_at: SystemTime,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
     pub position: i32,
     pub group: bool,
     pub only_show_if_degraded: bool,

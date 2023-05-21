@@ -1,4 +1,5 @@
-use std::{collections::HashMap, time::SystemTime};
+use chrono::{DateTime, Utc};
+use std::collections::HashMap;
 
 #[derive(serde::Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -54,7 +55,7 @@ pub struct RealFriend {
     // empty groups array
     pub alias: String,
     pub note: String,
-    pub created: SystemTime,
+    pub created: DateTime<Utc>,
 }
 
 #[derive(serde::Deserialize, Debug)]

@@ -1,12 +1,12 @@
+use chrono::{DateTime, Utc};
 use serde::*;
 use serde_enum_str::Deserialize_enum_str as DeserializeEnum;
-use std::time::SystemTime;
 
 #[derive(Deserialize, Debug)]
 pub struct OAuthToken {
     pub access_token: String,
     pub expires_in: i32,
-    pub expires_at: SystemTime,
+    pub expires_at: DateTime<Utc>,
     pub token_type: TokenType,
     pub client_id: String,
     pub internal_client: bool,
@@ -19,11 +19,11 @@ pub struct OAuthToken {
 pub struct OAuthTokenUser {
     pub access_token: String,
     pub expires_in: i32,
-    pub expires_at: SystemTime,
+    pub expires_at: DateTime<Utc>,
     pub token_type: TokenType,
     pub refresh_token: String,
     pub refresh_expires: i32,
-    pub refresh_expires_at: SystemTime,
+    pub refresh_expires_at: DateTime<Utc>,
     pub account_id: String,
     pub client_id: String,
     pub internal_client: bool,

@@ -1,4 +1,4 @@
-use std::time::SystemTime;
+use chrono::{DateTime, Utc};
 
 #[derive(serde::Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -25,10 +25,10 @@ pub struct Entitlement {
     pub entitlement_type: String,
 
     // When the entitlement was granted
-    pub grant_date: SystemTime,
+    pub grant_date: DateTime<Utc>,
 
     // When the entitlement started being given out (I think)
-    pub start_date: Option<SystemTime>,
+    pub start_date: Option<DateTime<Utc>>,
 
     // Whether the entitlement is cosumable (?)
     pub consumable: bool,
@@ -49,10 +49,10 @@ pub struct Entitlement {
     pub platform_type: Option<String>,
 
     // When the entitlement was created
-    pub created: SystemTime,
+    pub created: DateTime<Utc>,
 
     // Last time the entitlement was updated
-    pub updated: SystemTime,
+    pub updated: DateTime<Utc>,
 
     // Whether the entitlement was given to a group (?)
     pub group_entitlement: bool,

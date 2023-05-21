@@ -1,4 +1,4 @@
-use std::time::SystemTime;
+use chrono::{DateTime, Utc};
 
 // This isn't everything since I'm not going to use all of it unless I add a browser element or html parsing
 // for the fields that are HTML
@@ -10,7 +10,7 @@ pub struct BlogItem {
     pub trending_image: String,      // 19:6 wide af
     pub author: String,
     pub title: String,
-    pub date: SystemTime,
+    pub date: DateTime<Utc>,
     pub external_link: Option<String>,
     pub slug: String,
     #[serde(default, rename = "_metaTags")]
