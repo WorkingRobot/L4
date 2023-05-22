@@ -59,9 +59,10 @@ impl ObjectImpl for AppInner {
 
 impl ApplicationImpl for AppInner {
     fn startup(&self) {
+        Self::register_resources();
+
         self.parent_startup();
 
-        Self::register_resources();
         Self::register_icons();
 
         let settings = gtk::Settings::default().expect("Could not get default settings");
