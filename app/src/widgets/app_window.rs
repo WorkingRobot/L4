@@ -5,7 +5,7 @@ use gtk::{
     gio::{self, prelude::*, ApplicationCommandLine, ListStore},
     glib,
     prelude::StaticType,
-    traits::GtkWindowExt,
+    traits::{GtkWindowExt, WidgetExt},
     CompositeTemplate,
 };
 use once_cell::unsync::OnceCell;
@@ -127,6 +127,9 @@ impl AppWindowInner {
 impl ObjectImpl for AppWindowInner {
     fn constructed(&self) {
         self.parent_constructed();
+
+        #[cfg(debug_assertions)]
+        self.obj().add_css_class("devel");
 
         _ = self.data.borrow().set(AppWindowData::new(self));
         let mut data = self.data.borrow_mut();
