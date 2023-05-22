@@ -77,7 +77,13 @@ impl AccountInner {
     }
 
     #[template_callback]
-    fn on_remove_account(&self) {
+    fn on_selected(&self) {
+        println!("selected");
+        self.obj().add_css_class("selected");
+    }
+
+    #[template_callback]
+    fn on_removed(&self) {
         AboutWindow::builder()
             .application_name("Epic Games")
             .application_icon("icon")
@@ -93,11 +99,7 @@ impl AccountInner {
     }
 }
 
-impl ObjectImpl for AccountInner {
-    fn constructed(&self) {
-        self.parent_constructed();
-    }
-}
+impl ObjectImpl for AccountInner {}
 
 impl WidgetImpl for AccountInner {}
 

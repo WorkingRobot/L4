@@ -2,7 +2,7 @@ using Gtk 4.0;
 using Gio 2.0;
 using Adw 1;
 
-template EpicSettings: Adw.PreferencesGroup {
+template $EpicSettings: Adw.PreferencesGroup {
   title: _("Epic Games");
 
   Adw.ExpanderRow account-row {
@@ -11,6 +11,7 @@ template EpicSettings: Adw.PreferencesGroup {
 
     [action]
     Button add-account-button {
+      styles ["circular"]
       valign: center;
       icon-name: "list-add-symbolic";
       tooltip-text: _("Add Account");

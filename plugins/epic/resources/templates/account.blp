@@ -2,9 +2,13 @@ using Gtk 4.0;
 using Gio 2.0;
 using Adw 1;
 
-template EpicAccount: Adw.ActionRow {
-  title: "Asriel_Dev";
-  subtitle: "9baf4e2cbd4947d4bd0f2dcde49058b8";
+template $EpicAccount: Adw.ActionRow {
+  selectable: true;
+  activatable: true;
+  title: "Unknown";
+  subtitle: "00112233445566778899aabbccddeeff";
+
+  activated => $on_selected() swapped;
 
   [prefix]
   Adw.Avatar avatar {
@@ -14,10 +18,10 @@ template EpicAccount: Adw.ActionRow {
 
   [suffix]
   Gtk.Button remove-button {
+    styles ["flat", "circular"]
     valign: center;
-    styles [ "flat" ]
     icon-name: "list-remove-symbolic";
 
-    clicked => $on_remove_account() swapped;
+    clicked => $on_removed() swapped;
   }
 }
