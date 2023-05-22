@@ -1,7 +1,11 @@
-use adw::{subclass::prelude::*, AboutWindow};
+use super::Account;
+use crate::config::{Config, SavedUserCreds};
+use adw::{subclass::prelude::*, AboutWindow, ExpanderRow};
 use deps::utils::composite_widget;
-use gtk::{glib, traits::GtkWindowExt, CompositeTemplate, StringList, TemplateChild};
+use gtk::{glib, traits::GtkWindowExt, CompositeTemplate, TemplateChild};
+use once_cell::unsync::OnceCell;
 use plugins_core::prelude::*;
+use std::sync::{Arc, RwLock};
 
 composite_widget!(Settings => "EpicSettings",
     @inner SettingsInner!,
@@ -13,12 +17,30 @@ composite_widget!(Settings => "EpicSettings",
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/me/workingrobot/l4/epic/templates/settings.ui")]
 pub struct SettingsInner {
-    #[template_child(id = "account-list")]
-    pub account_list: TemplateChild<StringList>,
+    #[template_child(id = "account-row")]
+    account_row: TemplateChild<ExpanderRow>,
+
+    config: OnceCell<Arc<RwLock<Config>>>,
 }
 
 #[gtk::template_callbacks]
 impl SettingsInner {
+    pub fn on_added_account(&self, user: SavedUserCreds) {
+        self.account_row.add_row(&Account::new(user.clone()));
+    }
+
+    pub fn set_config(&self, config: Arc<RwLock<Config>>) {
+        self.config.set(config).ok().unwrap();
+        let config = self.config.get().unwrap().read().unwrap();
+
+        for user in &config.users.0 {
+            self.account_row.add_row(&Account::new(user.clone()));
+        }
+        if let Some(selected_user) = &config.selected_user {
+            // todo
+        }
+    }
+
     #[template_callback]
     fn on_open_about(&self) {
         AboutWindow::builder()
@@ -39,6 +61,11 @@ impl SettingsInner {
     fn on_add_account(&self) {
         let launcher = gtk::UriLauncher::new("https://www.epicgames.com/id/embedded/login?client_id=3f69e56c7649492c8cc29f1af08a8a12&response_type=code&display=embedded&prompt=login");
         launcher.launch(None::<&gtk::Window>, None::<&gtk::gio::Cancellable>, |_| {});
+    }
+
+    #[template_callback]
+    fn on_user_selected(&self, idx: u32) {
+        self.config.get().unwrap().write().unwrap().selected_user = Some(idx as usize);
     }
 }
 

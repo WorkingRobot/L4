@@ -1,7 +1,7 @@
 use deps::utils::Encrypted;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SavedUserCreds {
     pub account_id: String,
     pub display_name: String,

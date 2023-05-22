@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/me/workingrobot/l4/epic">
+    <file compressed="true" preprocess="xml-stripblanks">templates/account.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">templates/settings.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">graphics/icon.svg</file>
     <file compressed="true">graphics/banner.png</file>

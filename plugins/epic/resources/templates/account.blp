@@ -1,0 +1,23 @@
+using Gtk 4.0;
+using Gio 2.0;
+using Adw 1;
+
+template EpicAccount: Adw.ActionRow {
+  title: "Asriel_Dev";
+  subtitle: "9baf4e2cbd4947d4bd0f2dcde49058b8";
+
+  [prefix]
+  Adw.Avatar avatar {
+    text: bind EpicAccount.title;
+    size: 48;
+  }
+
+  [suffix]
+  Gtk.Button remove-button {
+    valign: center;
+    styles [ "flat" ]
+    icon-name: "list-remove-symbolic";
+
+    clicked => $on_remove_account() swapped;
+  }
+}

@@ -113,7 +113,7 @@ impl core::Plugin for Plugin {
         let config = &this.config;
         this.auth_code_dispatcher.connect(
             glib::clone!(@weak settings, @weak config => @default-return false, move |creds| {
-                settings.imp().account_list.append(&creds.display_name);
+                settings.imp().on_added_account(creds.clone());
                 config.write().unwrap().users.push(creds);
                 true
             }),
@@ -123,9 +123,11 @@ impl core::Plugin for Plugin {
             .register_protocol(&this, "com.epicgames.fortnite")
             .unwrap();
 
-        if let Some(config) = this.client.get_storage(&this) {
-            *this.config.write().unwrap() = from_value(config).unwrap();
+        if let Some(saved_config) = this.client.get_storage(&this) {
+            let mut config = this.config.write().unwrap();
+            *config = from_value(saved_config).unwrap();
         }
+        settings.imp().set_config(config.clone());
 
         Arc::new(this)
     }
