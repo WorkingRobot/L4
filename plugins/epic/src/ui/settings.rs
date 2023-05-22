@@ -33,12 +33,12 @@ impl SettingsInner {
         self.config.set(config).ok().unwrap();
         let config = self.config.get().unwrap().read().unwrap();
 
-        for user in &config.users.0 {
+        for user in &config.accounts.0 {
             self.account_row.add_row(&Account::new(user.clone()));
         }
-        if let Some(selected_user) = &config.selected_user {
-            // todo
-        }
+        //if let Some(selected_user) = &config.selected_user {
+        // todo
+        //}
     }
 
     #[template_callback]
@@ -62,18 +62,9 @@ impl SettingsInner {
         let launcher = gtk::UriLauncher::new("https://www.epicgames.com/id/embedded/login?client_id=3f69e56c7649492c8cc29f1af08a8a12&response_type=code&display=embedded&prompt=login");
         launcher.launch(None::<&gtk::Window>, None::<&gtk::gio::Cancellable>, |_| {});
     }
-
-    #[template_callback]
-    fn on_user_selected(&self, idx: u32) {
-        self.config.get().unwrap().write().unwrap().selected_user = Some(idx as usize);
-    }
 }
 
-impl ObjectImpl for SettingsInner {
-    fn constructed(&self) {
-        self.parent_constructed();
-    }
-}
+impl ObjectImpl for SettingsInner {}
 
 impl WidgetImpl for SettingsInner {}
 

@@ -114,7 +114,7 @@ impl core::Plugin for Plugin {
         this.auth_code_dispatcher.connect(
             glib::clone!(@weak settings, @weak config => @default-return false, move |creds| {
                 settings.imp().on_added_account(creds.clone());
-                config.write().unwrap().users.push(creds);
+                config.write().unwrap().accounts.push(creds);
                 true
             }),
         );
