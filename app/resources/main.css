@@ -1,0 +1,12 @@
+.boxed-list row.selected {
+    background-color: @selected_bg_color;
+    color: @selected_fg_color;
+}
+
+.boxed-list row.expander {
+    padding: 0;
+}
+
+.boxed-list row.combo listview {
+    background-color: rgba(0, 0, 0, 0);
+}
