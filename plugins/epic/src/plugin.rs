@@ -153,6 +153,7 @@ impl core::Plugin for Plugin {
             tokio::spawn(Self::consume_authorization_code(
                 self.auth_code_dispatcher.clone(),
                 code,
+                self.config.clone(),
             ));
         }
     }
@@ -181,12 +182,27 @@ impl Plugin {
         )
     }
 
-    async fn create_creds_from_auth_code(code: String) -> Result<SavedUserCreds> {
+    async fn create_creds_from_auth_code(
+        code: String,
+        config: Arc<RwLock<Config>>,
+    ) -> Result<SavedUserCreds> {
         let client = Client::new()?;
         let token: OAuthTokenUser = client
             .oauth_authorization_code(Credentials::FortniteAndroid, &code)
             .await?;
+        let account_id = token.account_id.clone();
         let authed_client = ClientAuthed::new(token, Credentials::FortniteAndroid)?;
+        // If the account is already added, we'll ignore it.
+        if config
+            .read()
+            .unwrap()
+            .accounts
+            .0
+            .iter()
+            .any(|u| u.account_id == account_id)
+        {
+            return Err(crate::web::Error::Other);
+        }
         let account: GetAccount = authed_client.get_account().await?;
         let device_auth: DeviceAuth = authed_client.create_device_auth().await?;
 
@@ -199,16 +215,15 @@ impl Plugin {
         })
     }
 
-    async fn consume_authorization_code(dispatcher: Dispatcher<SavedUserCreds>, code: String) {
-        let result: Result<SavedUserCreds> = Self::create_creds_from_auth_code(code).await;
-        match result {
-            Ok(creds) => {
-                dispatcher.emit(creds);
-            }
-            Err(err) => {
-                println!("{err:?}");
-            }
-        };
+    async fn consume_authorization_code(
+        dispatcher: Dispatcher<SavedUserCreds>,
+        code: String,
+        config: Arc<RwLock<Config>>,
+    ) {
+        // Ignore failure, some weird stuff must've happened...
+        if let Ok(creds) = Self::create_creds_from_auth_code(code, config).await {
+            dispatcher.emit(creds);
+        }
     }
 }
 
