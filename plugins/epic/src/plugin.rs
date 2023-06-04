@@ -11,9 +11,8 @@ use deps::utils::Dispatcher;
 use fragile::Fragile;
 use gtk::gdk_pixbuf::Pixbuf;
 use gtk::glib;
-use once_cell::sync::Lazy;
 use plugins_core::prelude::*;
-use std::sync::{Arc, RwLock};
+use std::sync::{Arc, LazyLock, RwLock};
 
 struct PluginGui {
     image_icon: Pixbuf,
@@ -42,14 +41,14 @@ impl core::Identity for Plugin {
     }
 
     fn version(&self) -> &'static Version {
-        static VERSION: Lazy<Version> =
-            Lazy::new(|| Version::parse(env!("CARGO_PKG_VERSION")).unwrap());
+        static VERSION: LazyLock<Version> =
+            LazyLock::new(|| Version::parse(env!("CARGO_PKG_VERSION")).unwrap());
         &VERSION
     }
 
     fn authors(&self) -> &'static [&'static str] {
-        static AUTHORS: Lazy<Vec<&str>> =
-            Lazy::new(|| env!("CARGO_PKG_AUTHORS").split(':').collect());
+        static AUTHORS: LazyLock<Vec<&str>> =
+            LazyLock::new(|| env!("CARGO_PKG_AUTHORS").split(':').collect());
         &AUTHORS
     }
 

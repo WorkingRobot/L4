@@ -8,7 +8,7 @@ use gtk::{
     traits::{GtkWindowExt, WidgetExt},
     IconTheme,
 };
-use once_cell::unsync::OnceCell;
+use std::cell::OnceCell;
 
 subclassed_gobject!(App => "L4App",
     @inner AppInner,

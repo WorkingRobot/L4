@@ -2,7 +2,6 @@ use crate::config::SavedUserCreds;
 use adw::{subclass::prelude::*, AboutWindow};
 use deps::utils::{composite_widget, Dispatcher};
 use gtk::{glib, traits::GtkWindowExt, CompositeTemplate, TemplateChild};
-use once_cell::unsync::OnceCell;
 use plugins_core::prelude::{
     adw::Avatar,
     gtk::{
@@ -14,6 +13,7 @@ use plugins_core::prelude::{
     *,
 };
 use reqwest::Client;
+use std::cell::OnceCell;
 
 composite_widget!(Account => "EpicAccount",
     @inner AccountInner!,

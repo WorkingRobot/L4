@@ -16,7 +16,6 @@ serde_json = "*"
 chrono = { version = "*", features = ["serde"] }
 tokio = "*"
 fragile = "*"
-once_cell = "*"
 
 [build-dependencies]
 build-scripts = { path = "../../build" }

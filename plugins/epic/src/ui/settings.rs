@@ -3,9 +3,11 @@ use crate::config::{Config, SavedUserCreds};
 use adw::{subclass::prelude::*, AboutWindow, ExpanderRow};
 use deps::utils::composite_widget;
 use gtk::{glib, traits::GtkWindowExt, CompositeTemplate, TemplateChild};
-use once_cell::unsync::OnceCell;
 use plugins_core::prelude::*;
-use std::sync::{Arc, RwLock};
+use std::{
+    cell::OnceCell,
+    sync::{Arc, RwLock},
+};
 
 composite_widget!(Settings => "EpicSettings",
     @inner SettingsInner!,

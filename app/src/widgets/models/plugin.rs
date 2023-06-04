@@ -3,7 +3,6 @@ use gtk::{
     gdk::{Paintable, Texture},
     glib::{ParamSpecObject, ParamSpecString},
 };
-use once_cell::sync::Lazy;
 use plugins_core::prelude::*;
 use std::sync::{Arc, Weak};
 

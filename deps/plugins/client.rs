@@ -1,8 +1,10 @@
 use crate::utils::{register_protocol, Storage};
 use gtk::gdk_pixbuf::Pixbuf;
-use once_cell::sync::Lazy;
 use plugins_core::prelude::*;
-use std::{path::Path, sync::RwLock};
+use std::{
+    path::Path,
+    sync::{LazyLock, RwLock},
+};
 
 pub struct Client {
     storage: RwLock<Storage>,
@@ -44,14 +46,14 @@ impl core::Identity for Client {
     }
 
     fn version(&self) -> &'static Version {
-        static VERSION: Lazy<Version> =
-            Lazy::new(|| Version::parse(env!("CARGO_PKG_VERSION")).unwrap());
+        static VERSION: LazyLock<Version> =
+            LazyLock::new(|| Version::parse(env!("CARGO_PKG_VERSION")).unwrap());
         &VERSION
     }
 
     fn authors(&self) -> &'static [&'static str] {
-        static AUTHORS: Lazy<Vec<&str>> =
-            Lazy::new(|| env!("CARGO_PKG_AUTHORS").split(':').collect());
+        static AUTHORS: LazyLock<Vec<&str>> =
+            LazyLock::new(|| env!("CARGO_PKG_AUTHORS").split(':').collect());
         &AUTHORS
     }
 

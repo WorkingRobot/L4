@@ -1,15 +1,16 @@
 use super::{models, PageGames, PagePlugins, SettingsWindow};
 use adw::subclass::prelude::*;
 use deps::{plugins::PluginRegistry, utils::composite_widget};
+#[cfg(debug_assertions)]
+use gtk::traits::WidgetExt;
 use gtk::{
     gio::{self, prelude::*, ApplicationCommandLine, ListStore},
     glib,
     prelude::StaticType,
-    traits::{GtkWindowExt, WidgetExt},
+    traits::GtkWindowExt,
     CompositeTemplate,
 };
-use once_cell::unsync::OnceCell;
-use std::cell::RefCell;
+use std::cell::{OnceCell, RefCell};
 
 composite_widget!(AppWindow => "L4AppWindow",
     @inner AppWindowInner!,

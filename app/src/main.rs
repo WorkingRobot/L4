@@ -1,4 +1,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+#![feature(lazy_cell)]
 mod widgets;
 
 use gtk::prelude::*;

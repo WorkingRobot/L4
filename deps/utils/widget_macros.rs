@@ -3,11 +3,12 @@ macro_rules! item_model {
     ($name:tt, $inner_name:tt, $glib_name:expr, ($($arg_name:ident: $arg_type:ty),* $(,)?), |$inner:ident| {$($param_spec:ident $(::<$param_turbofish:ty>)? ($prop_name:expr) => $prop_getter:expr),* $(,)?}) => {
         mod imp {
             use super::$inner_name as Inner;
-            use once_cell::unsync::OnceCell;
             use gtk::glib;
             use gtk::subclass::prelude::*;
             use gtk::glib::{ParamSpec, Value};
             use std::ops::Deref;
+            use std::cell::OnceCell;
+            use std::sync::LazyLock;
             use super::*;
 
             #[derive(Default)]
@@ -23,7 +24,7 @@ macro_rules! item_model {
 
             impl ObjectImpl for $name {
                 fn properties() -> &'static [ParamSpec] {
-                    static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
+                    static PROPERTIES: LazyLock<Vec<ParamSpec>> = LazyLock::new(|| {
                         vec![
                             $($param_spec::builder$(::<$param_turbofish>)?($prop_name).read_only().build(),)*
                         ]

@@ -6,8 +6,7 @@ use gtk::{
     traits::GtkWindowExt,
     CompositeTemplate, StringList, TemplateChild,
 };
-use once_cell::unsync::OnceCell;
-use std::cell::RefCell;
+use std::cell::{OnceCell, RefCell};
 
 use super::models;
 
