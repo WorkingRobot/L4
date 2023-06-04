@@ -45,17 +45,6 @@ impl AppWindowData {
     }
 }
 
-impl Drop for AppWindowData {
-    fn drop(&mut self) {
-        // Keeping these alive prior to dropping PluginRegistry means
-        // Rust will panic/throw (scary, I know) a STATUS_ACCESS_VIOLATION
-        // This is due to the Weak<> drop implementation trying to
-        // access unloaded dll memory to decrement its weak count
-        self.game_store.remove_all();
-        self.plugin_store.remove_all();
-    }
-}
-
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/me/workingrobot/l4/templates/app_window.ui")]
 pub struct AppWindowInner {

@@ -23,24 +23,23 @@ pub struct AppInner {
 }
 
 impl AppInner {
-    fn register_resources() {
-        gio::resources_register_include!("Sweet.gresource").expect("Failed to register theme");
-        gio::resources_register_include!("Sweet-Ambar.gresource")
-            .expect("Failed to register theme");
-        gio::resources_register_include!("Sweet-Ambar-Blue.gresource")
-            .expect("Failed to register theme");
-        gio::resources_register_include!("Sweet-Dark.gresource").expect("Failed to register theme");
-        gio::resources_register_include!("Sweet-Mars.gresource").expect("Failed to register theme");
-        gio::resources_register_include!("FontAwesome.gresource")
-            .expect("Failed to register theme");
-        gio::resources_register_include!("L4.gresource").expect("Failed to register app resources");
+    fn register_resources() -> Result<(), glib::Error> {
+        gio::resources_register_include!("Sweet.gresource")?;
+        gio::resources_register_include!("Sweet-Ambar.gresource")?;
+        gio::resources_register_include!("Sweet-Ambar-Blue.gresource")?;
+        gio::resources_register_include!("Sweet-Dark.gresource")?;
+        gio::resources_register_include!("Sweet-Mars.gresource")?;
+        gio::resources_register_include!("FontAwesome.gresource")?;
+        gio::resources_register_include!("L4.gresource")?;
+        Ok(())
     }
 
-    fn register_icons() {
-        let display = gdk::Display::default().expect("Could not get a display");
+    fn register_icons() -> Option<()> {
+        let display = gdk::Display::default()?;
         let icon_theme = IconTheme::for_display(&display);
         icon_theme.add_resource_path("/me/workingrobot/l4");
         icon_theme.add_resource_path("/com/fontawesome/icons");
+        Some(())
     }
 
     fn register_theme(settings: &gtk::Settings) {
@@ -59,13 +58,13 @@ impl ObjectImpl for AppInner {
 
 impl ApplicationImpl for AppInner {
     fn startup(&self) {
-        Self::register_resources();
+        Self::register_resources().expect("Failed to register resources");
 
         self.parent_startup();
 
-        Self::register_icons();
+        Self::register_icons().expect("Failed to register icons");
 
-        let settings = gtk::Settings::default().expect("Could not get default settings");
+        let settings = gtk::Settings::default().expect("Failed to get default settings");
         Self::register_theme(&settings);
 
         let window = AppWindow::new(self.obj().upcast_ref::<gtk::Application>());
